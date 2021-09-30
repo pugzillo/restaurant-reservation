@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useHistory, Link } from "react-router-dom";
+import { createReservation } from "../utils/api";
 
 function CreateReservationForm() {
   // tracks form state
@@ -22,6 +23,7 @@ function CreateReservationForm() {
   const handleSubmit = (event) => {
     event.preventDefault();
     // Post request
+    createReservation(form);
     // Send confirmation to user
     window.alert("Reservation created!");
     history.push(`/dashboard?date=${form.reservation_date}`); // sends user to reservation page
