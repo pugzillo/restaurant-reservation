@@ -21,6 +21,8 @@ function CreateReservationForm() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    // Post request
+    // Send confirmation to user
     window.alert("Reservation created!");
     history.push(`/dashboard?date=${form.reservation_date}`); // sends user to reservation page
   };
