@@ -11,7 +11,7 @@ async function list(req, res) {
 }
 
 async function create(req, res) {
-  const data = await service.create(req.body.data);
+  const data = await service.create(req.body);
   res.status(201).json({ data });
 }
 
