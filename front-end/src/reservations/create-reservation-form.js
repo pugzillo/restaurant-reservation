@@ -24,9 +24,9 @@ function CreateReservationForm() {
     event.preventDefault();
     // Post request
     createReservation(form);
-    // Send confirmation to user
-    window.alert("Reservation created!");
-    history.push(`/dashboard?date=${form.reservation_date}`); // sends user to reservation page
+
+    // window.alert("Reservation created!"); // Send confirmation to user
+    // history.push(`/dashboard?date=${form.reservation_date}`); // sends user to reservation page
   };
 
   const cancelLink = "/"; // send user to home after canceling
