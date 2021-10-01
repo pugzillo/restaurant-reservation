@@ -47,19 +47,19 @@ function CreateReservationForm() {
         <div className="FirstName">
           <label>
             First Name:
-            <input type="text" name="first_name" onChange={changeHandler} />
+            <input type="text" name="first_name" onChange={changeHandler} required/>
           </label>
         </div>
         <div className="LastName">
           <label>
             Last Name:
-            <input type="text" name="last_name" onChange={changeHandler} />
+            <input type="text" name="last_name" onChange={changeHandler} required/>
           </label>
         </div>
         <div className="MobileNumber">
           <label>
             Mobile Number:
-            <input type="text" name="mobile_number" onChange={changeHandler} />
+            <input type="text" name="mobile_number" onChange={changeHandler} required/>
           </label>
         </div>
         <div className="ReservationDate">
@@ -69,6 +69,7 @@ function CreateReservationForm() {
               type="date"
               name="reservation_date"
               onChange={changeHandler}
+              required
             />
           </label>
         </div>
@@ -79,13 +80,14 @@ function CreateReservationForm() {
               type="time"
               name="reservation_time"
               onChange={changeHandler}
+              required
             />
           </label>
         </div>
         <div className="People">
           <label>
             Number of People in Party:
-            <input type="text" name="people" onChange={changeHandler} />
+            <input type="text" name="people" onChange={changeHandler} required/>
           </label>
         </div>
         <div className="FormButtons">
