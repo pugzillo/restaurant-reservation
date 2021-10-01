@@ -78,12 +78,13 @@ export async function listReservations(params, signal) {
  *  a promise that resolves to a reservation saved in the database.
  */
 export async function createReservation(reservation, signal) {
+  const data = { data: reservation };
   const url = new URL(`${API_BASE_URL}/reservations`);
   const options = {
     method: "POST",
     headers,
-    body: JSON.stringify(reservation),
-    signal
+    body: JSON.stringify(data),
+    signal,
   };
   return await fetchJson(url, options, {});
 }

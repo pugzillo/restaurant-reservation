@@ -8,7 +8,7 @@ const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
  * Checks if the required fields exist in request body.
  */
 function requiredReservationFieldsExist(req, res, next) {
-  const data = req.body;
+  const { data = {} } = req.body;
   const requiredFields = [
     "first_name",
     "last_name",
@@ -17,11 +17,8 @@ function requiredReservationFieldsExist(req, res, next) {
     "reservation_time",
     "people",
   ];
-  console.log(req.body);
-  console.log(requiredFields)
   try {
     requiredFields.forEach((field) => {
-      console.log(data[field])
       if (!data[field]) {
         const error = new Error(`A '${field}' field is required`);
         error.status = 400;
@@ -41,7 +38,7 @@ async function list(req, res) {
 }
 
 async function create(req, res) {
-  const data = await service.create(req.body);
+  const data = await service.create(req.body.data);
   res.status(201).json({ data });
 }
 
