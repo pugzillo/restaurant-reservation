@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useHistory, Link } from "react-router-dom";
 import { createReservation } from "../utils/api";
+import { Message } from "semantic-ui-react";
+// import MessageBanner from "./message-banner";
 
 function CreateReservationForm() {
   // tracks form state
@@ -14,7 +16,7 @@ function CreateReservationForm() {
   });
 
   // error state
-  const [formError, setFormError] = useState(false);
+  const [formErrors, setFormErrors] = useState([]);
 
   // Changes form when submitted
   const changeHandler = (event) => {
@@ -25,11 +27,9 @@ function CreateReservationForm() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-
     createReservation(form)
       .then(() => history.push(`/dashboard?date=${form.reservation_date}`))
-      .catch((err) => setFormError(true));
-    //
+      .catch((err) => setFormErrors([...formErrors, err.message]));
   };
 
   const cancelLink = "/"; // send user to home after canceling
@@ -37,6 +37,12 @@ function CreateReservationForm() {
   return (
     <div className="CreateReservationForm">
       <h1>Create New Reservation</h1>
+      {formErrors.length !== 0 && (
+        <Message negative>
+          <Message.Header>Warning:</Message.Header>
+          <p>{formErrors}</p>
+        </Message>
+      )}
       <form onSubmit={handleSubmit}>
         <div className="FirstName">
           <label>
