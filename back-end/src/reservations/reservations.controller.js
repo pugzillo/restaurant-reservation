@@ -25,10 +25,24 @@ function requiredReservationFieldsExist(req, res, next) {
         throw error;
       }
     });
+    res.locals.people = data.people; // set people to local variable; will be used in following middleware
     next();
   } catch (error) {
     next(error);
   }
+}
+
+/**
+ * People is a number
+ */
+function peopleIsInteger(req, res, next) {
+  const { people } = res.locals;
+  if (typeof people !== 'number'){
+    const error = new Error(`Enter a valid people number`);
+    error.status = 400;
+    return next(error);
+  }
+  next();
 }
 
 async function list(req, res) {
@@ -44,5 +58,9 @@ async function create(req, res) {
 
 module.exports = {
   list: asyncErrorBoundary(list),
-  create: [requiredReservationFieldsExist, asyncErrorBoundary(create)],
+  create: [
+    requiredReservationFieldsExist,
+    peopleIsInteger,
+    asyncErrorBoundary(create),
+  ],
 };
