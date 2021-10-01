@@ -13,6 +13,9 @@ function CreateReservationForm() {
     people: "",
   });
 
+  // error state
+  const [formError, setFormError] = useState(false);
+
   // Changes form when submitted
   const changeHandler = (event) => {
     setForm({ ...form, [event.target.name]: event.target.value });
@@ -22,11 +25,11 @@ function CreateReservationForm() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    // Post request
-    createReservation(form);
 
-    // window.alert("Reservation created!"); // Send confirmation to user
-    // history.push(`/dashboard?date=${form.reservation_date}`); // sends user to reservation page
+    createReservation(form)
+      .then(() => history.push(`/dashboard?date=${form.reservation_date}`))
+      .catch((err) => setFormError(true));
+    //
   };
 
   const cancelLink = "/"; // send user to home after canceling
