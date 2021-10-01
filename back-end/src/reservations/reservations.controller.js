@@ -25,7 +25,10 @@ function requiredReservationFieldsExist(req, res, next) {
         throw error;
       }
     });
-    res.locals.people = data.people; // set people to local variable; will be used in following middleware
+    // set local variables for fields that must be validated
+    res.locals.people = data.people;
+    res.locals.reservationDate = data.reservation_date;
+    res.locals.reservationTime = data.reservation_time;
     next();
   } catch (error) {
     next(error);
@@ -36,13 +39,39 @@ function requiredReservationFieldsExist(req, res, next) {
  * People is a number
  */
 function peopleIsInteger(req, res, next) {
-  const { people } = res.locals;
-  if (typeof people !== 'number'){
-    const error = new Error(`Enter a valid people number`);
+  const people = res.locals.people;
+  if (typeof people !== "number") {
+    const error = new Error("Enter a valid people number");
     error.status = 400;
     return next(error);
   }
   next();
+}
+
+/**
+ * Checks if reservation_date is a date
+ */
+function reservationDateIsDate(req, res, next) {
+  const reservationDate = res.locals.reservationDate;
+  if (isNaN(Date.parse(reservationDate))) {
+    const error = new Error("Enter a valid reservation_date");
+    error.status = 400;
+    return next(error);
+  }
+  next();
+}
+
+/**
+ * Checks if reservation_time is a time
+ */
+ function reservationTimeIsTime(req, res, next) {
+  const reservationTime = res.locals.reservationTime;
+  if (/^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$/.test(reservationTime)) {
+    return next();
+  }
+  const error = new Error("Enter a valid reservation_time");
+  error.status = 400;
+  next(error);
 }
 
 async function list(req, res) {
@@ -61,6 +90,8 @@ module.exports = {
   create: [
     requiredReservationFieldsExist,
     peopleIsInteger,
+    reservationDateIsDate,
+    reservationTimeIsTime,
     asyncErrorBoundary(create),
   ],
 };
