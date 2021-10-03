@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useHistory, Link } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { createReservation } from "../utils/api";
 import { Message } from "semantic-ui-react";
 // import MessageBanner from "./message-banner";
@@ -32,7 +32,9 @@ function CreateReservationForm() {
       .catch((err) => setFormErrors([...formErrors, err.message]));
   };
 
-  const cancelLink = "/"; // send user to home after canceling
+  const handleCancel = (event) => {
+    history.push("/dashboard"); // send user to home after canceling
+  };
 
   return (
     <div className="CreateReservationForm">
@@ -47,19 +49,34 @@ function CreateReservationForm() {
         <div className="FirstName">
           <label>
             First Name:
-            <input type="text" name="first_name" onChange={changeHandler} required/>
+            <input
+              type="text"
+              name="first_name"
+              onChange={changeHandler}
+              required
+            />
           </label>
         </div>
         <div className="LastName">
           <label>
             Last Name:
-            <input type="text" name="last_name" onChange={changeHandler} required/>
+            <input
+              type="text"
+              name="last_name"
+              onChange={changeHandler}
+              required
+            />
           </label>
         </div>
         <div className="MobileNumber">
           <label>
             Mobile Number:
-            <input type="text" name="mobile_number" onChange={changeHandler} required/>
+            <input
+              type="text"
+              name="mobile_number"
+              onChange={changeHandler}
+              required
+            />
           </label>
         </div>
         <div className="ReservationDate">
@@ -87,21 +104,21 @@ function CreateReservationForm() {
         <div className="People">
           <label>
             Number of People in Party:
-            <input type="text" name="people" onChange={changeHandler} required/>
+            <input
+              type="text"
+              name="people"
+              onChange={changeHandler}
+              required
+            />
           </label>
         </div>
         <div className="FormButtons">
           <button type="submit" className="btn btn-primary">
             Submit
           </button>
-          <Link
-            to={cancelLink}
-            className="btn btn-secondary"
-            href="#"
-            role="button"
-          >
+          <button className="btn btn-secondary" onClick={handleCancel}>
             Cancel
-          </Link>
+          </button>
         </div>
       </form>
     </div>
