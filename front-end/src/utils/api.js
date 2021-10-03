@@ -67,3 +67,30 @@ export async function listReservations(params, signal) {
     .then(formatReservationDate)
     .then(formatReservationTime);
 }
+
+/**
+ * Create a reservation.
+ * @param reservation
+ *  the reservation to create
+ * @param signal
+ *  optional AbortController.signal
+ * @returns {Promise<[reservation]>}
+ *  a promise that resolves to a reservation saved in the database.
+ */
+export async function createReservation(reservation, signal) {
+  const data = {
+    data: {
+      ...reservation,
+      people: parseInt(reservation.people)
+    }
+  };
+
+  const url = new URL(`${API_BASE_URL}/reservations`);
+  const options = {
+    method: "POST",
+    headers,
+    body: JSON.stringify(data),
+    signal,
+  };
+  return await fetchJson(url, options, {});
+}
