@@ -39,7 +39,7 @@ function requiredReservationFieldsExist(req, res, next) {
  * People is a number
  */
 function peopleIsInteger(req, res, next) {
-  const people = Number(res.locals.people);
+  const people = res.locals.people;
   if (typeof people !== "number") {
     const error = new Error("Enter a valid people number");
     error.status = 400;
@@ -64,9 +64,11 @@ function reservationDateIsDate(req, res, next) {
 /**
  * Checks if reservation_time is a time
  */
- function reservationTimeIsTime(req, res, next) {
+function reservationTimeIsTime(req, res, next) {
   const reservationTime = res.locals.reservationTime;
-  if (/^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$/.test(reservationTime)) {
+  if (
+    /^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$/.test(reservationTime)
+  ) {
     return next();
   }
   const error = new Error("Enter a valid reservation_time");

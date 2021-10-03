@@ -105,7 +105,7 @@ function CreateReservationForm() {
           <label>
             Number of People in Party:
             <input
-              type="text"
+              type="number"
               name="people"
               onChange={changeHandler}
               required

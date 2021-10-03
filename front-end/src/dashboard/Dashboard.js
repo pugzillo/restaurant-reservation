@@ -45,21 +45,21 @@ function Dashboard({ date }) {
       <div className="DateControlButtons">
         <button
           type="button"
-          class="btn btn-secondary"
+          className="btn btn-secondary"
           onClick={handlePrevious}
         >
           Previous
         </button>
-        <button type="button" class="btn btn-primary" onClick={handleToday}>
+        <button type="button" className="btn btn-primary" onClick={handleToday}>
           Today
         </button>
-        <button type="button" class="btn btn-secondary" onClick={handleNext}>
+        <button type="button" className="btn btn-secondary" onClick={handleNext}>
           Next
         </button>
       </div>
 
-      <table class="table table-striped">
-        <thead class="thead-dark">
+      <table className="table table-striped">
+        <thead className="thead-dark">
           <tr>
             <th scope="col">First Name</th>
             <th scope="col">Last Name</th>
