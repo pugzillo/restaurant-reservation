@@ -19,7 +19,7 @@ function Dashboard({ date }) {
   function loadDashboard() {
     const abortController = new AbortController();
     setReservationsError(null);
-    listReservations({ displayedDate }, abortController.signal)
+    listReservations({ date: displayedDate }, abortController.signal)
       .then(setReservations)
       .catch(setReservationsError);
     return () => abortController.abort();
@@ -40,7 +40,7 @@ function Dashboard({ date }) {
       <h1>Dashboard</h1>
       <ErrorAlert error={reservationsError} />
       <div className="d-md-flex mb-3">
-        <h4 className="mb-0">Reservations for date</h4>
+        <h4 className="mb-0">Reservations for {displayedDate}</h4>
       </div>
       <div className="DateControlButtons">
         <button

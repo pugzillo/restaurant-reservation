@@ -39,7 +39,7 @@ function requiredReservationFieldsExist(req, res, next) {
  * People is a number
  */
 function peopleIsInteger(req, res, next) {
-  const people = res.locals.people;
+  const people = Number(res.locals.people);
   if (typeof people !== "number") {
     const error = new Error("Enter a valid people number");
     error.status = 400;
