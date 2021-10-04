@@ -99,7 +99,7 @@ function setDateTime(date, time) {
  */
 function reservationIsNotOnTuesday(req, res, next) {
   const reservationTime = res.locals.reservationTime;
-  const reservationDate = new Date(res.locals.reservationDate);
+  const reservationDate = new Date(res.locals.reservationDate + "T00:00:00"); // added +'T00:00:00' to treat 
 
   const dateTime = setDateTime(reservationDate, reservationTime);
   res.locals.dateTime = dateTime;
@@ -118,7 +118,9 @@ function reservationIsNotOnTuesday(req, res, next) {
 function reservationIsInTheFuture(req, res, next) {
   const dateTime = res.locals.dateTime;
   if (dateTime < Date.now()) {
-    const error = new Error("Selected reservation has already passed.");
+    const error = new Error(
+      "Selected reservation has already passed. Please select date in teh future"
+    );
     error.status = 400;
     return next(error);
   }
@@ -144,7 +146,7 @@ module.exports = {
     reservationDateIsDate,
     reservationTimeIsTime,
     reservationIsNotOnTuesday,
-    reservationIsInTheFuture, 
+    reservationIsInTheFuture,
     asyncErrorBoundary(create),
   ],
 };
