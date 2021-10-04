@@ -40,7 +40,7 @@ function CreateReservationForm() {
     <div className="CreateReservationForm">
       <h1>Create New Reservation</h1>
       {formErrors.length !== 0 && (
-        <Message negative>
+        <Message negative className="alert alert-danger">
           <Message.Header>Warning:</Message.Header>
           <p>{formErrors}</p>
         </Message>
