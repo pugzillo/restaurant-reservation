@@ -1,3 +1,7 @@
 const knex = require("../db/connection");
 
-module.exports = {};
+function list() {
+  return knex("tables").select("*");
+}
+
+module.exports = { list };
