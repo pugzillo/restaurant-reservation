@@ -3,6 +3,7 @@ import React from "react";
 import { Redirect, Route, Switch, useLocation } from "react-router-dom";
 import Dashboard from "../dashboard/Dashboard";
 import CreateReservationForm from "../reservations/create-reservation-form";
+import NewTableForm from "../tables/new-table-form";
 import NotFound from "./NotFound";
 import { today } from "../utils/date-time";
 
@@ -28,6 +29,9 @@ function Routes() {
     <Switch>
       <Route exact={true} path="/">
         <Redirect to={"/dashboard"} />
+      </Route>
+      <Route path="/tables/new">
+        <NewTableForm />
       </Route>
       <Route path="/reservations/new">
         <CreateReservationForm />
