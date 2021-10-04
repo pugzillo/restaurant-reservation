@@ -99,7 +99,7 @@ function setDateTime(date, time) {
  */
 function reservationIsNotOnTuesday(req, res, next) {
   const reservationTime = res.locals.reservationTime;
-  const reservationDate = new Date(res.locals.reservationDate + "T00:00:00"); // added +'T00:00:00' to treat 
+  const reservationDate = new Date(res.locals.reservationDate + "T00:00:00"); // added +'T00:00:00' to treat
 
   const dateTime = setDateTime(reservationDate, reservationTime);
   res.locals.dateTime = dateTime;
@@ -127,6 +127,33 @@ function reservationIsInTheFuture(req, res, next) {
   next();
 }
 
+/**
+ * Checks if reservation_time is after 10:30 AM, when restaurant closes, and before 9:30 PM, 21:30 UTC
+ */
+function reservationIsDuringRestaurantHours(req, res, next) {
+  const reservationDateTime = res.locals.dateTime;
+
+  const closingDateTime = new Date(res.locals.reservationDate);
+  closingDateTime.setHours(21);
+  closingDateTime.setMinutes(30);
+
+  const openingDateTime = new Date(res.locals.reservationDate);
+  openingDateTime.setHours(10);
+  openingDateTime.setMinutes(30);
+
+  if (
+    reservationDateTime < openingDateTime ||
+    reservationDateTime > closingDateTime
+  ) {
+    const error = new Error(
+      "Selected reservation time is not during restaurant operating hours."
+    );
+    error.status = 400;
+    return next(error);
+  }
+  next();
+}
+
 async function list(req, res) {
   const { date } = req.query;
   const data = await service.list(date);
@@ -147,6 +174,7 @@ module.exports = {
     reservationTimeIsTime,
     reservationIsNotOnTuesday,
     reservationIsInTheFuture,
+    reservationIsDuringRestaurantHours,
     asyncErrorBoundary(create),
   ],
 };
