@@ -76,6 +76,55 @@ function reservationTimeIsTime(req, res, next) {
   next(error);
 }
 
+/**
+ * Add time to date
+ */
+function setDateTime(date, time) {
+  const index = time.indexOf("."); // replace with ":" for differently displayed time.
+  const index2 = time.indexOf(" ");
+
+  const hours = time.substring(0, index);
+  const minutes = time.substring(index + 1, index2);
+
+  // add time to date object
+  date.setHours(hours);
+  date.setMinutes(minutes);
+  date.setSeconds("00");
+
+  return date;
+}
+
+/**
+ * Checks if reservation_date is not on a tuesday (restaurant is closed)
+ */
+function reservationIsNotOnTuesday(req, res, next) {
+  const reservationTime = res.locals.reservationTime;
+  const reservationDate = new Date(res.locals.reservationDate);
+
+  const dateTime = setDateTime(reservationDate, reservationTime);
+  res.locals.dateTime = dateTime;
+
+  if (dateTime.getDay() == 2) {
+    const error = new Error("Restaurant is closed on Tuesdays.");
+    error.status = 400;
+    return next(error);
+  }
+  next();
+}
+
+/**
+ * Checks if reservation_date is not on a tuesday (restaurant is closed)
+ */
+function reservationIsInTheFuture(req, res, next) {
+  const dateTime = res.locals.dateTime;
+  if (dateTime < Date.now()) {
+    const error = new Error("Selected reservation has already passed.");
+    error.status = 400;
+    return next(error);
+  }
+  next();
+}
+
 async function list(req, res) {
   const { date } = req.query;
   const data = await service.list(date);
@@ -94,6 +143,8 @@ module.exports = {
     peopleIsInteger,
     reservationDateIsDate,
     reservationTimeIsTime,
+    reservationIsNotOnTuesday,
+    reservationIsInTheFuture, 
     asyncErrorBoundary(create),
   ],
 };
