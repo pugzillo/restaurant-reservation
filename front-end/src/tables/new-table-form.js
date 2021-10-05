@@ -19,8 +19,7 @@ function NewTableForm() {
   const handleSubmit = (event) => {
     event.preventDefault();
     createTable(form)
-      // .then(() => history.push("/dashboard"))
-      .then(()=> console.log)
+      .then(() => history.push("/dashboard")) // send users to dashboard page
       .catch((err) => setFormErrors([...formErrors, err.message]));
   };
 
