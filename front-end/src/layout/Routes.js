@@ -6,6 +6,7 @@ import CreateReservationForm from "../reservations/create-reservation-form";
 import NewTableForm from "../tables/new-table-form";
 import NotFound from "./NotFound";
 import { today } from "../utils/date-time";
+import ReservationSeating from "../dashboard/ReservationSeating";
 
 /**
  * Retrieves query parameters of a URL via URLSearchParams
@@ -32,6 +33,9 @@ function Routes() {
       </Route>
       <Route path="/tables/new">
         <NewTableForm />
+      </Route>
+      <Route path="/reservations/:reservation_id/seat">
+        <ReservationSeating />
       </Route>
       <Route path="/reservations/new">
         <CreateReservationForm />

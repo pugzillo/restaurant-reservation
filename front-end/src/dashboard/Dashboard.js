@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { listReservations, listTables } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 import { today, previous, next } from "../utils/date-time";
+import { Link } from "react-router-dom";
 
 /**
  * Defines the dashboard page.
@@ -76,6 +77,7 @@ function Dashboard({ date }) {
               <th scope="col">Last Name</th>
               <th scope="col">Mobile Number</th>
               <th scope="col">Reservation Time</th>
+              <th scope="col"></th>
             </tr>
           </thead>
           <tbody>
@@ -86,6 +88,15 @@ function Dashboard({ date }) {
                   <td>{reservation.last_name}</td>
                   <td>{reservation.mobile_number}</td>
                   <td>{reservation.reservation_time}</td>
+                  <td>
+                    <Link
+                      type="button"
+                      className="btn btn-secondary"
+                      to={`/reservations/${reservation.reservation_id}/seat`}
+                    >
+                      Seat
+                    </Link>
+                  </td>
                 </tr>
               );
             })}
