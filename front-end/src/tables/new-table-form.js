@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
+import { createTable } from "../utils/api";
 
 function NewTableForm() {
   // tracks form state
@@ -8,6 +9,8 @@ function NewTableForm() {
     capacity: 0,
   });
 
+  const [formErrors, setFormErrors] = useState([]);
+
   // Changes form when submitted
   const changeHandler = (event) => {
     setForm({ ...form, [event.target.name]: event.target.value });
@@ -15,10 +18,13 @@ function NewTableForm() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log("submitted")
+    createTable(form)
+      // .then(() => history.push("/dashboard"))
+      .then(()=> console.log)
+      .catch((err) => setFormErrors([...formErrors, err.message]));
   };
 
-  const history = useHistory(); 
+  const history = useHistory();
 
   const handleCancel = (event) => {
     history.push("/dashboard"); // send user to home after canceling

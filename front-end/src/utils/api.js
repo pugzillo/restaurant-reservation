@@ -81,11 +81,39 @@ export async function createReservation(reservation, signal) {
   const data = {
     data: {
       ...reservation,
-      people: parseInt(reservation.people)
-    }
+      people: parseInt(reservation.people),
+    },
   };
 
   const url = new URL(`${API_BASE_URL}/reservations`);
+  const options = {
+    method: "POST",
+    headers,
+    body: JSON.stringify(data),
+    signal,
+  };
+  return await fetchJson(url, options, {});
+}
+
+/**
+ * Create a table.
+ * @param table
+ *  the reservation to create
+ * @param signal
+ *  optional AbortController.signal
+ * @returns {Promise<[reservation]>}
+ *  a promise that resolves to a reservation saved in the database.
+ */
+export async function createTable(table, signal) {
+  const data = {
+    data: {
+      ...table,
+      capacity: parseInt(table.capacity),
+      status: "Free",
+    },
+  };
+
+  const url = new URL(`${API_BASE_URL}/tables`);
   const options = {
     method: "POST",
     headers,
