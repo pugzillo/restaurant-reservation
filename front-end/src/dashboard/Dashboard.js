@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { listReservations } from "../utils/api";
+import { listReservations, listTables } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 import { today, previous, next } from "../utils/date-time";
 
@@ -13,6 +13,8 @@ function Dashboard({ date }) {
   const [reservations, setReservations] = useState([]);
   const [reservationsError, setReservationsError] = useState(null);
   const [displayedDate, setdisplayedDate] = useState(date);
+  const [tables, setTables] = useState([]);
+  const [tablesError, setTablesError] = useState(null);
 
   useEffect(loadDashboard, [displayedDate]);
 
@@ -22,6 +24,10 @@ function Dashboard({ date }) {
     listReservations({ date: displayedDate }, abortController.signal)
       .then(setReservations)
       .catch(setReservationsError);
+    setTablesError(null);
+    listTables({}, abortController.signal)
+      .then(setTables)
+      .catch(setTablesError);
     return () => abortController.abort();
   }
 
@@ -53,33 +59,62 @@ function Dashboard({ date }) {
         <button type="button" className="btn btn-primary" onClick={handleToday}>
           Today
         </button>
-        <button type="button" className="btn btn-secondary" onClick={handleNext}>
+        <button
+          type="button"
+          className="btn btn-secondary"
+          onClick={handleNext}
+        >
           Next
         </button>
       </div>
 
-      <table className="table table-striped">
-        <thead className="thead-dark">
-          <tr>
-            <th scope="col">First Name</th>
-            <th scope="col">Last Name</th>
-            <th scope="col">Mobile Number</th>
-            <th scope="col">Reservation Time</th>
-          </tr>
-        </thead>
-        <tbody>
-          {reservations.map((reservation) => {
-            return (
-              <tr>
-                <td>{reservation.first_name}</td>
-                <td>{reservation.last_name}</td>
-                <td>{reservation.mobile_number}</td>
-                <td>{reservation.reservation_time}</td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+      <div className="ReservationsTable">
+        <table className="table table-striped">
+          <thead className="thead-dark">
+            <tr>
+              <th scope="col">First Name</th>
+              <th scope="col">Last Name</th>
+              <th scope="col">Mobile Number</th>
+              <th scope="col">Reservation Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            {reservations.map((reservation) => {
+              return (
+                <tr>
+                  <td>{reservation.first_name}</td>
+                  <td>{reservation.last_name}</td>
+                  <td>{reservation.mobile_number}</td>
+                  <td>{reservation.reservation_time}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="TablesTable">
+        <table className="table table-striped">
+          <thead className="thead-dark">
+            <tr>
+              <th scope="col">Table Name</th>
+              <th scope="col">Capacity</th>
+              <th scope="col">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {tables.map((table) => {
+              return (
+                <tr>
+                  <td>{table.table_name}</td>
+                  <td>{table.capacity}</td>
+                  <td>{table.status}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </main>
   );
 }

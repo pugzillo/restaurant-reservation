@@ -122,3 +122,17 @@ export async function createTable(table, signal) {
   };
   return await fetchJson(url, options, {});
 }
+
+/**
+ * Retrieves all existing tables.
+ * @returns {Promise<[reservation]>}
+ *  a promise that resolves to a possibly empty array of tables saved in the database.
+ */
+
+ export async function listTables(params, signal) {
+  const url = new URL(`${API_BASE_URL}/tables`);
+  Object.entries(params).forEach(([key, value]) =>
+    url.searchParams.append(key, value.toString())
+  );
+  return await fetchJson(url, { headers, signal }, []); 
+}
