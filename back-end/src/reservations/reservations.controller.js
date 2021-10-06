@@ -1,6 +1,5 @@
 const service = require("./reservations.service");
 const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
-const { min } = require("../db/connection");
 
 /**
  * Checks if the required fields exist in request body.
