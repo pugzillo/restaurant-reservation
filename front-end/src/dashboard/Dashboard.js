@@ -83,7 +83,7 @@ function Dashboard({ date }) {
           <tbody>
             {reservations.map((reservation) => {
               return (
-                <tr>
+                <tr key={reservation.reservation_id}>
                   <td>{reservation.first_name}</td>
                   <td>{reservation.last_name}</td>
                   <td>{reservation.mobile_number}</td>
@@ -116,7 +116,7 @@ function Dashboard({ date }) {
           <tbody>
             {tables.map((table) => {
               return (
-                <tr>
+                <tr key={table.table_id}>
                   <td>{table.table_name}</td>
                   <td>{table.capacity}</td>
                   <td>{table.status}</td>

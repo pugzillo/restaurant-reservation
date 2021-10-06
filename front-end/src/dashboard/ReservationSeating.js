@@ -10,16 +10,24 @@ function ReservationSeating() {
   const [reservationError, setReservationError] = useState(null);
 
   useEffect(loadDropDown, [reservation_id]);
+  useEffect(loadReservation, [reservation_id]);
 
+  // loads reservation information
+  function loadReservation() {
+    const abortController = new AbortController();
+    setReservationError(null); 
+    getReservation(reservation_id, {}, abortController.signal)
+      .then(setReservation)
+      .catch(setReservationError);
+    return () => abortController.abort();
+  }
+  // Loads the dropdown
   function loadDropDown() {
     const abortController = new AbortController();
     setTablesError(null);
     listTables({}, abortController.signal)
       .then(setTables)
       .catch(setTablesError);
-    getReservation(reservation_id, {}, abortController.signal)
-      .then(setReservation)
-      .catch(setReservationError);
     return () => abortController.abort();
   }
 
