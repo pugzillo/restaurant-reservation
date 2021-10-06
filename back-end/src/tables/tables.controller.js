@@ -43,11 +43,26 @@ function tableNameMoreThanOneCharacter(req, res, next) {
  */
 function capacityIsANumber(req, res, next) {
   const capacity = res.locals.capacity;
-  if (typeof(capacity) !== "number") {
+  if (typeof capacity !== "number") {
     const error = new Error("capacity is not a number");
     error.status = 400;
     return next(error);
   }
+  next();
+}
+
+/**
+ * Checks if table_id is exists
+ */
+async function tableIdExists(req, res, next) {
+  const tableId = req.params.table_id;
+  const table = await service.read(tableId);
+  if (!table) {
+    const error = new Error("table id does not exist");
+    error.status = 400;
+    return next(error);
+  }
+  res.locals.table = table;
   next();
 }
 
@@ -67,6 +82,27 @@ async function create(req, res, next) {
   res.status(201).json({ data });
 }
 
+/**
+ * Read handler for tables
+ */
+async function read(req, res) {
+  const tableId = req.params.table_id;
+  const table = await service.read(tableId);
+  res.json({ table });
+}
+
+/**
+ * Update handler for tables seating
+ */
+async function update(req, res, next) {
+  const updatedTable = {
+    ...res.locals.table,
+    seated: req.body.data.reservation_id
+  }
+  const data = await service.update(updatedTable);
+  res.json({ data });
+}
+
 module.exports = {
   list: asyncErrorBoundary(list),
   create: [
@@ -75,4 +111,6 @@ module.exports = {
     capacityIsANumber,
     asyncErrorBoundary(create),
   ],
+  update: [asyncErrorBoundary(tableIdExists), asyncErrorBoundary(update)],
+  read: [asyncErrorBoundary(read)],
 };
