@@ -1,11 +1,15 @@
 exports.up = function (knex) {
   return knex.schema.table("tables", (table) => {
-    table.string("seated").notNullable().defaultTo("pending");
+    table.integer("reservation_id").unsigned();
+    table
+    .foreign("reservation_id")
+    .references("reservation_id")
+    .inTable("reservations");
   });
 };
 
 exports.down = function (knex) {
   return knex.schema.table("tables", (table) => {
-    table.dropColumns("seated");
+    table.dropColumns("reservation_id");
   });
 };

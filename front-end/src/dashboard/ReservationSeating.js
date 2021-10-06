@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useHistory } from "react-router-dom";
 import { listTables, getReservation, seatReservation } from "../utils/api";
+import { Message } from "semantic-ui-react";
+
+// TODO: Deal with error messaging 
 
 /**
  * Seat reservations at tables
@@ -8,31 +11,31 @@ import { listTables, getReservation, seatReservation } from "../utils/api";
 function ReservationSeating() {
   const { reservation_id } = useParams();
   const [tables, setTables] = useState([]); // state for the list of tables
-  const [tablesError, setTablesError] = useState(null);
   const [reservation, setReservation] = useState({}); // state for the reservation
-  const [reservationError, setReservationError] = useState(null);
+  const [formErrors, setFormErrors] = useState([]);
   const [selectedTable, setSelectedTable] = useState(null);
 
-  useEffect(loadDropDown, [reservation_id]);
   useEffect(loadReservation, [reservation_id]);
+  useEffect(loadDropDown, [reservation_id]);
+
 
   // loads reservation information
   function loadReservation() {
     const abortController = new AbortController();
-    setReservationError(null);
+    setFormErrors([]);
     getReservation(reservation_id, {}, abortController.signal)
       .then(setReservation)
-      .catch(setReservationError);
+      .catch((err) => setFormErrors([...formErrors, err.message]));
     return () => abortController.abort();
   }
 
   // Loads the dropdown
   function loadDropDown() {
     const abortController = new AbortController();
-    setTablesError(null);
+    setFormErrors([]);
     listTables({}, abortController.signal)
       .then(setTables)
-      .catch(setTablesError);
+      .catch((err) => setFormErrors([...formErrors, err.message]));
     return () => abortController.abort();
   }
 
@@ -47,8 +50,13 @@ function ReservationSeating() {
   // Changes form when submitted
   const submitHandler = (event) => {
     event.preventDefault();
-    seatReservation(reservation_id, selectedTable);
-    history.push("/dashboard"); // send user to home after canceling
+    if (selectedTable.capacity >= reservation.people) {
+      seatReservation(reservation_id, selectedTable);
+      history.push("/dashboard"); // send user to home after canceling
+    } else {
+      const err = new Error("Selected table does not have the capacity for this reservation.");
+
+    }
   };
 
   const handleCancel = (event) => {

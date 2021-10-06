@@ -110,7 +110,7 @@ function Dashboard({ date }) {
             <tr>
               <th scope="col">Table Name</th>
               <th scope="col">Capacity</th>
-              <th scope="col">Status</th>
+              <th scope="col">Seated</th>
             </tr>
           </thead>
           <tbody>
@@ -119,7 +119,7 @@ function Dashboard({ date }) {
                 <tr key={table.table_id}>
                   <td>{table.table_name}</td>
                   <td>{table.capacity}</td>
-                  <td>{table.status}</td>
+                  <td>{table.seated}</td>
                 </tr>
               );
             })}

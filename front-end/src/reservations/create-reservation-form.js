@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { createReservation } from "../utils/api";
 import { Message } from "semantic-ui-react";
-// import MessageBanner from "./message-banner";
 
 function CreateReservationForm() {
   // tracks form state
