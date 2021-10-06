@@ -81,7 +81,7 @@ function setDateTime(date, time) {
   const index = time.indexOf(":"); // replace ":" for differently displayed time.
 
   const hours = time.substring(0, index);
-  const minutes = time.substring(index + 1, time.length-1);
+  const minutes = time.substring(index + 1, time.length - 1);
 
   // add time to date object
   date.setHours(hours);
@@ -127,7 +127,7 @@ function reservationIsInTheFuture(req, res, next) {
  * Checks if reservation_time is after 10:30 AM, when restaurant closes, and before 9:30 PM, 21:30 UTC
  */
 function reservationIsDuringRestaurantHours(req, res, next) {
-  const reservationDateTime = res.locals.dateTime
+  const reservationDateTime = res.locals.dateTime;
 
   // using reservation date and adding hours to get closing/opening datetimes
   const closingDateTime = new Date(res.locals.reservationDate + "T00:00:00"); // added +'T00:00:00' to treat
@@ -166,6 +166,15 @@ async function create(req, res) {
   res.status(201).json({ data });
 }
 
+/**
+ * Read handler for reservation resources
+ */
+async function read(req, res) {
+  const reservationId = req.params.reservation_id;
+  const data = await service.read(reservationId);
+  res.json({ data });
+}
+
 module.exports = {
   list: asyncErrorBoundary(list),
   create: [
@@ -178,4 +187,5 @@ module.exports = {
     reservationIsDuringRestaurantHours,
     asyncErrorBoundary(create),
   ],
+  read: [asyncErrorBoundary(read)],
 };
