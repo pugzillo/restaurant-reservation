@@ -150,6 +150,22 @@ function reservationIsDuringRestaurantHours(req, res, next) {
 }
 
 /**
+ * Checks if reservation_id exists
+ */
+async function reservationIdExists(req, res, next) {
+  const reservationId = req.params.reservation_id;
+  const reservation = await service.read(reservationId);
+
+  if (!reservation) {
+    const error = new Error("Reservation id does not exist.");
+    error.status = 400;
+    return next(error);
+  }
+  res.locals.reservation = reservation;
+  next();
+}
+
+/**
  * List handler for reservation resources
  */
 async function list(req, res) {
@@ -170,8 +186,7 @@ async function create(req, res) {
  * Read handler for reservation resources
  */
 async function read(req, res) {
-  const reservationId = req.params.reservation_id;
-  const data = await service.read(reservationId);
+  const data = res.locals.reservation;
   res.json({ data });
 }
 
@@ -187,5 +202,5 @@ module.exports = {
     reservationIsDuringRestaurantHours,
     asyncErrorBoundary(create),
   ],
-  read: [asyncErrorBoundary(read)],
+  read: [reservationIdExists, asyncErrorBoundary(read)],
 };
