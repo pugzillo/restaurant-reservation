@@ -114,8 +114,8 @@ export async function createReservation(reservation, signal) {
  *  the reservation to create
  * @param signal
  *  optional AbortController.signal
- * @returns {Promise<[reservation]>}
- *  a promise that resolves to a reservation saved in the database.
+ * @returns {Promise<[table]>}
+ *  a promise that resolves to a table saved in the database.
  */
 export async function createTable(table, signal) {
   const data = {
@@ -138,7 +138,7 @@ export async function createTable(table, signal) {
 
 /**
  * Retrieves all existing tables.
- * @returns {Promise<[reservation]>}
+ * @returns {Promise<[tables]>}
  *  a promise that resolves to a possibly empty array of tables saved in the database.
  */
 
@@ -148,4 +148,26 @@ export async function listTables(params, signal) {
     url.searchParams.append(key, value.toString())
   );
   return await fetchJson(url, { headers, signal }, []);
+}
+
+/**
+ * Seats a reservation at a specific table.
+ * @returns {Promise<[table]>}
+ *  a promise that resolves to a possibly empty table object in the database.
+ */
+export async function seatReservation(reservation_id, table_id, signal) {
+  const data = {
+    data: {
+      reservation_id: reservation_id,
+    },
+  };
+
+  const url = new URL(`${API_BASE_URL}/tables/${table_id}/seat`);
+  const options = {
+    method: "PUT",
+    headers,
+    body: JSON.stringify(data),
+    signal,
+  };
+  return await fetchJson(url, options, {});
 }

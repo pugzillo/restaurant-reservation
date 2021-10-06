@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { listTables, getReservation } from "../utils/api";
+import { useParams, useHistory } from "react-router-dom";
+import { listTables, getReservation, seatReservation } from "../utils/api";
 
+/**
+ * Seat reservations at tables
+ */
 function ReservationSeating() {
   const { reservation_id } = useParams();
-  const [tables, setTables] = useState([]);
+  const [tables, setTables] = useState([]); // state for the list of tables
   const [tablesError, setTablesError] = useState(null);
-  const [reservation, setReservation] = useState({});
+  const [reservation, setReservation] = useState({}); // state for the reservation
   const [reservationError, setReservationError] = useState(null);
+  const [selectedTable, setSelectedTable] = useState(null);
 
   useEffect(loadDropDown, [reservation_id]);
   useEffect(loadReservation, [reservation_id]);
@@ -21,6 +25,7 @@ function ReservationSeating() {
       .catch(setReservationError);
     return () => abortController.abort();
   }
+
   // Loads the dropdown
   function loadDropDown() {
     const abortController = new AbortController();
@@ -30,15 +35,30 @@ function ReservationSeating() {
       .catch(setTablesError);
     return () => abortController.abort();
   }
+
   // Changes form when selected
-  const changeHandler = (event) => {};
+  const changeHandler = (event) => {
+    setSelectedTable(event.target.value);
+    console.log(selectedTable);
+  };
+
+  const history = useHistory();
+
   // Changes form when submitted
-  const submitHandler = (event) => {};
-  
+  const submitHandler = (event) => {
+    event.preventDefault();
+    seatReservation(reservation_id, selectedTable);
+    history.push("/dashboard"); // send user to home after canceling
+  };
+
+  const handleCancel = (event) => {
+    history.push("/dashboard"); // send user to home after canceling
+  };
+
   return (
     <div className="ReservationSeating">
       <h1>Seat a Reservation</h1>
-      <form>
+      <form onSubmit={submitHandler}>
         <div className="form-group row">
           <div className="col-auto my-1">
             <h4 className="mb-0">Seat Reservation {reservation_id}</h4>
@@ -46,6 +66,7 @@ function ReservationSeating() {
             <select
               className="custom-select mr-sm-2"
               id="inlineFormCustomSelect"
+              onChange={changeHandler}
             >
               <option value>Choose...</option>
               {tables.map((table) => {
@@ -63,7 +84,9 @@ function ReservationSeating() {
             <button type="submit" className="btn btn-primary">
               Submit
             </button>
-            <button className="btn btn-secondary">Cancel</button>
+            <button className="btn btn-secondary" onClick={handleCancel}>
+              Cancel
+            </button>
           </div>
         </div>
       </form>
