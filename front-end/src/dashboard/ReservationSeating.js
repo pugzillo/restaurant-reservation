@@ -15,7 +15,7 @@ function ReservationSeating() {
   // loads reservation information
   function loadReservation() {
     const abortController = new AbortController();
-    setReservationError(null); 
+    setReservationError(null);
     getReservation(reservation_id, {}, abortController.signal)
       .then(setReservation)
       .catch(setReservationError);
@@ -30,7 +30,11 @@ function ReservationSeating() {
       .catch(setTablesError);
     return () => abortController.abort();
   }
-
+  // Changes form when selected
+  const changeHandler = (event) => {};
+  // Changes form when submitted
+  const submitHandler = (event) => {};
+  
   return (
     <div className="ReservationSeating">
       <h1>Seat a Reservation</h1>
@@ -46,7 +50,7 @@ function ReservationSeating() {
               <option value>Choose...</option>
               {tables.map((table) => {
                 return (
-                  <option value={table.table_id}>
+                  <option key={table.table_id} value={table.table_id}>
                     {table.table_name} - capacity: {table.capacity}
                   </option>
                 );
