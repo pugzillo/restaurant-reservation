@@ -90,21 +90,52 @@ async function reservationIdExists(req, res, next) {
     error.status = 404;
     return next(error);
   }
+  res.locals.reservationSize = reservation.people; // reservation size to local var
   next();
 }
 
-// /**
-//  * Checks if body data exists
-//  */
-// function bodyDataExists(req, res, next) {
-//   const bodyData = req.body.data;
-//   if (bodyData === {}) {
-//     const error = new Error("Data is missing.");
-//     error.status = 400;
-//     return next(error);
-//   }
-//   next();
-// }
+/**
+ * Checks if table has sufficient capacity
+ */
+function tableHasSufficientCapacity(req, res, next) {
+  const partySize = res.locals.reservationSize;
+  const table = res.locals.table;
+  if (partySize > table.capacity) {
+    const error = new Error(
+      `Table ${table.table_name} does not have sufficient capacity`
+    );
+    error.status = 400;
+    return next(error);
+  }
+  next();
+}
+
+/**
+ * Checks if table is already occupied
+ */
+function tableIsOccupied(req, res, next) {
+  const table = res.locals.table;
+  if (table.status === "occupied") {
+    const error = new Error(`Table ${table.table_name} is occupied.`);
+    error.status = 400;
+    return next(error);
+  }
+  next();
+}
+
+/**
+ * Checks if body data exists
+ */
+function bodyDataExists(req, res, next) {
+  const bodyData = req.body.data;
+  console.log(bodyData);
+  if (!bodyData) {
+    const error = new Error("Data is missing.");
+    error.status = 400;
+    return next(error);
+  }
+  next();
+}
 
 /**
  * List handler for tables resources
@@ -137,7 +168,7 @@ async function read(req, res) {
 async function update(req, res, next) {
   const updatedTable = {
     ...res.locals.table,
-    status: "Occupied",
+    status: "occupied",
     reservation_id: req.body.data.reservation_id,
   };
   const data = await service.update(updatedTable);
@@ -155,8 +186,10 @@ module.exports = {
   update: [
     asyncErrorBoundary(tableIdExists),
     seatingInputIsValid,
-    // bodyDataExists,
+    bodyDataExists,
     reservationIdExists,
+    tableHasSufficientCapacity,
+    tableIsOccupied,
     asyncErrorBoundary(update),
   ],
   read: [asyncErrorBoundary(read)],
