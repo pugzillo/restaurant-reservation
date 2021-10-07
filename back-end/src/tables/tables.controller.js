@@ -128,7 +128,6 @@ function tableIsOccupied(req, res, next) {
  */
 function bodyDataExists(req, res, next) {
   const bodyData = req.body.data;
-  console.log(bodyData);
   if (!bodyData) {
     const error = new Error("Data is missing.");
     error.status = 400;
