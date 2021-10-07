@@ -1,4 +1,5 @@
 const service = require("./tables.service");
+const reservationService = require("../reservations/reservations.service");
 const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
 
 /**
@@ -79,6 +80,33 @@ async function tableIdExists(req, res, next) {
 }
 
 /**
+ * Checks if reservation_id exists
+ */
+async function reservationIdExists(req, res, next) {
+  const reservationId = req.body.data.reservation_id;
+  const reservation = await reservationService.read(reservationId);
+  if (!reservation) {
+    const error = new Error(`reservation_id ${reservationId} does not exist`);
+    error.status = 404;
+    return next(error);
+  }
+  next();
+}
+
+// /**
+//  * Checks if body data exists
+//  */
+// function bodyDataExists(req, res, next) {
+//   const bodyData = req.body.data;
+//   if (bodyData === {}) {
+//     const error = new Error("Data is missing.");
+//     error.status = 400;
+//     return next(error);
+//   }
+//   next();
+// }
+
+/**
  * List handler for tables resources
  */
 async function list(req, res, next) {
@@ -127,6 +155,8 @@ module.exports = {
   update: [
     asyncErrorBoundary(tableIdExists),
     seatingInputIsValid,
+    // bodyDataExists,
+    reservationIdExists,
     asyncErrorBoundary(update),
   ],
   read: [asyncErrorBoundary(read)],
