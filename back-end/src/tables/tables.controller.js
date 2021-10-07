@@ -26,6 +26,18 @@ function requiredFieldsExist(req, res, next) {
 }
 
 /**
+ * Checks if the required fields for seating exist
+ */
+function seatingInputIsValid(req, res, next) {
+  if (!req.body.data.reservation_id) {
+    const error = new Error("A reservation_id is required");
+    error.status = 400;
+    return next(error);
+  }
+  next();
+}
+
+/**
  * Checks if table_name is more than one character
  */
 function tableNameMoreThanOneCharacter(req, res, next) {
@@ -97,8 +109,9 @@ async function read(req, res) {
 async function update(req, res, next) {
   const updatedTable = {
     ...res.locals.table,
-    seated: req.body.data.reservation_id
-  }
+    status: "Occupied",
+    reservation_id: req.body.data.reservation_id,
+  };
   const data = await service.update(updatedTable);
   res.json({ data });
 }
@@ -111,6 +124,10 @@ module.exports = {
     capacityIsANumber,
     asyncErrorBoundary(create),
   ],
-  update: [asyncErrorBoundary(tableIdExists), asyncErrorBoundary(update)],
+  update: [
+    asyncErrorBoundary(tableIdExists),
+    seatingInputIsValid,
+    asyncErrorBoundary(update),
+  ],
   read: [asyncErrorBoundary(read)],
 };
