@@ -38,9 +38,10 @@ function ReservationSeating() {
 
   // Changes form when selected
   const changeHandler = (event) => {
-    const currentTable = tables.filter(
-      (table) => table.table_id === parseInt(event.target.value)
-    )[0];
+    const tableInfo = event.target.value.split(" - ");
+    const currentTable = tables.find(
+      (table) => table.table_name === tableInfo[0]
+    );
     setSelectedTable(currentTable);
   };
 
@@ -49,15 +50,23 @@ function ReservationSeating() {
   // Changes form when submitted
   const submitHandler = (event) => {
     event.preventDefault();
-    if (selectedTable.capacity >= reservation.people) {
-      seatReservation(reservation_id, selectedTable.table_id);
-      history.push("/dashboard"); // send user to home after canceling
-    } else {
-      setFormErrors([
-        ...formErrors,
-        "Selected table does not have the capacity for this reservation.",
-      ]);
-    }
+    setFormErrors([]);
+    seatReservation(reservation_id, selectedTable.table_id)
+    .then(() => history.push("/dashboard"))
+    .catch((err) => setFormErrors([...formErrors, err.message]));
+    // if (
+    //   selectedTable.capacity >= reservation.people &&
+    //   selectedTable.status !== "occupied"
+    // ) {
+    //   seatReservation(reservation_id, selectedTable.table_id)
+    //     .then(() => history.push("/dashboard"))
+    //     .catch((err) => setFormErrors([...formErrors, err.message]));
+    // } else {
+    //   setFormErrors([
+    //     ...formErrors,
+    //     "Selected table does not have the capacity for this reservation.",
+    //   ]);
+    // }
   };
 
   const handleCancel = (event) => {
@@ -86,13 +95,14 @@ function ReservationSeating() {
             <select
               className="custom-select mr-sm-2"
               id="inlineFormCustomSelect"
+              name="table_id"
               onChange={changeHandler}
             >
               <option value>Choose...</option>
               {tables.map((table) => {
                 return (
-                  <option key={table.table_id} value={table.table_id}>
-                    {table.table_name} - capacity: {table.capacity}
+                  <option key={table.table_id} name={table.table_id}>
+                    {table.table_name} - {table.capacity}
                   </option>
                 );
               })}

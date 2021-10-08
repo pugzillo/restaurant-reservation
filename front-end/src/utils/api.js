@@ -143,6 +143,7 @@ export async function createTable(table, signal) {
  */
 
 export async function listTables(params, signal) {
+  console.log("Banana!")
   const url = new URL(`${API_BASE_URL}/tables`);
   Object.entries(params).forEach(([key, value]) =>
     url.searchParams.append(key, value.toString())
@@ -156,6 +157,7 @@ export async function listTables(params, signal) {
  *  a promise that resolves to a possibly empty table object in the database.
  */
 export async function seatReservation(reservation_id, table_id, signal) {
+  console.log("APPLE!")
   const data = {
     data: {
       reservation_id: reservation_id,

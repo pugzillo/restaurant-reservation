@@ -92,6 +92,7 @@ function Dashboard({ date }) {
                     <Link
                       type="button"
                       className="btn btn-secondary"
+                      href={`/reservations/${reservation.reservation_id}/seat`}
                       to={`/reservations/${reservation.reservation_id}/seat`}
                     >
                       Seat
