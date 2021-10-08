@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { createReservation } from "../utils/api";
 import { Message } from "semantic-ui-react";
-// import MessageBanner from "./message-banner";
 
 function CreateReservationForm() {
   // tracks form state
@@ -33,7 +32,7 @@ function CreateReservationForm() {
   };
 
   const handleCancel = (event) => {
-    history.push("/dashboard"); // send user to home after canceling
+    history.push("/reservations/new"); // send user to home after canceling
   };
 
   return (

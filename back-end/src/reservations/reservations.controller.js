@@ -1,8 +1,6 @@
-/**
- * List handler for reservation resources
- */
 const service = require("./reservations.service");
 const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
+const { min } = require("../db/connection");
 
 /**
  * Checks if the required fields exist in request body.
@@ -80,16 +78,14 @@ function reservationTimeIsTime(req, res, next) {
  * Add time to date
  */
 function setDateTime(date, time) {
-  const index = time.indexOf("."); // replace with ":" for differently displayed time.
-  const index2 = time.indexOf(" ");
+  const index = time.indexOf(":"); // replace ":" for differently displayed time.
 
   const hours = time.substring(0, index);
-  const minutes = time.substring(index + 1, index2);
+  const minutes = time.substring(index + 1, time.length - 1);
 
   // add time to date object
   date.setHours(hours);
   date.setMinutes(minutes);
-  date.setSeconds("00");
 
   return date;
 }
@@ -119,7 +115,7 @@ function reservationIsInTheFuture(req, res, next) {
   const dateTime = res.locals.dateTime;
   if (dateTime < Date.now()) {
     const error = new Error(
-      "Selected reservation has already passed. Please select date in teh future"
+      "Selected reservation has already passed. Please select date in the future"
     );
     error.status = 400;
     return next(error);
@@ -133,13 +129,12 @@ function reservationIsInTheFuture(req, res, next) {
 function reservationIsDuringRestaurantHours(req, res, next) {
   const reservationDateTime = res.locals.dateTime;
 
-  const closingDateTime = new Date(res.locals.reservationDate);
-  closingDateTime.setHours(21);
-  closingDateTime.setMinutes(30);
+  // using reservation date and adding hours to get closing/opening datetimes
+  const closingDateTime = new Date(res.locals.reservationDate + "T00:00:00"); // added +'T00:00:00' to treat
+  closingDateTime.setHours(21, 30);
 
-  const openingDateTime = new Date(res.locals.reservationDate);
-  openingDateTime.setHours(10);
-  openingDateTime.setMinutes(30);
+  const openingDateTime = new Date(res.locals.reservationDate + "T00:00:00"); // added +'T00:00:00' to treat
+  openingDateTime.setHours(10, 30);
 
   if (
     reservationDateTime < openingDateTime ||
@@ -154,15 +149,45 @@ function reservationIsDuringRestaurantHours(req, res, next) {
   next();
 }
 
+/**
+ * Checks if reservation_id exists
+ */
+async function reservationIdExists(req, res, next) {
+  const reservationId = req.params.reservation_id;
+  const reservation = await service.read(reservationId);
+
+  if (!reservation) {
+    const error = new Error("Reservation id does not exist.");
+    error.status = 400;
+    return next(error);
+  }
+  res.locals.reservation = reservation;
+  next();
+}
+
+/**
+ * List handler for reservation resources
+ */
 async function list(req, res) {
   const { date } = req.query;
   const data = await service.list(date);
   res.json({ data });
 }
 
+/**
+ * Create handler for reservation resources
+ */
 async function create(req, res) {
   const data = await service.create(req.body.data);
   res.status(201).json({ data });
+}
+
+/**
+ * Read handler for reservation resources
+ */
+async function read(req, res) {
+  const data = res.locals.reservation;
+  res.json({ data });
 }
 
 module.exports = {
@@ -177,4 +202,5 @@ module.exports = {
     reservationIsDuringRestaurantHours,
     asyncErrorBoundary(create),
   ],
+  read: [reservationIdExists, asyncErrorBoundary(read)],
 };
