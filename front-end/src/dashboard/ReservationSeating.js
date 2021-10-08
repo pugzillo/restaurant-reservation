@@ -53,9 +53,6 @@ function ReservationSeating() {
       seatReservation(reservation_id, selectedTable.table_id);
       history.push("/dashboard"); // send user to home after canceling
     } else {
-      // const err = new Error(
-      //   "Selected table does not have the capacity for this reservation."
-      // );
       setFormErrors([
         ...formErrors,
         "Selected table does not have the capacity for this reservation.",
@@ -64,7 +61,7 @@ function ReservationSeating() {
   };
 
   const handleCancel = (event) => {
-    history.push("/dashboard"); // send user to home after canceling
+    history.push("/reservations/new"); // send user to home after canceling
   };
 
   return (

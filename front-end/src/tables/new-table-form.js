@@ -26,7 +26,7 @@ function NewTableForm() {
   const history = useHistory();
 
   const handleCancel = (event) => {
-    history.push("/dashboard"); // send user to home after canceling
+    history.push("/reservations/new"); // send user to home after canceling
   };
 
   return (
