@@ -47,11 +47,16 @@ function Dashboard({ date }) {
         <button
           type="button"
           className="btn btn-secondary"
+          data-toggle="modal"
+          data-target="#exampleModal"
         >
           Finish
         </button>
       );
     }
+  };
+  const handleFinish = (event) => {
+    console.log("done")
   };
 
   return (
@@ -134,12 +139,61 @@ function Dashboard({ date }) {
                   <td>{table.table_name}</td>
                   <td>{table.capacity}</td>
                   <td data-table-id-status={table.table_id}>{table.status}</td>
-                  <td data-table-id-finish={table.table_id}>{finishButton(table.status)}</td>
+                  <td data-table-id-finish={table.table_id}>
+                    {finishButton(table.status)}
+                  </td>
                 </tr>
               );
             })}
           </tbody>
         </table>
+      </div>
+
+      {/* <!-- Modal --> */}
+      <div
+        class="modal fade"
+        id="exampleModal"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">
+                Finish Reservation
+              </h5>
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              Is this table ready to seat new guests? This cannot be undone.
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary"
+                onClick={handleFinish}
+              >
+                Finish
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </main>
   );
