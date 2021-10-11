@@ -41,6 +41,18 @@ function Dashboard({ date }) {
   const handlePrevious = (event) => {
     setdisplayedDate(previous(displayedDate));
   };
+  const finishButton = (status) => {
+    if (status === "occupied") {
+      return (
+        <button
+          type="button"
+          className="btn btn-secondary"
+        >
+          Finish
+        </button>
+      );
+    }
+  };
 
   return (
     <main>
@@ -112,6 +124,7 @@ function Dashboard({ date }) {
               <th scope="col">Table Name</th>
               <th scope="col">Capacity</th>
               <th scope="col">Seated</th>
+              <th scope="col">Finish</th>
             </tr>
           </thead>
           <tbody>
@@ -121,6 +134,7 @@ function Dashboard({ date }) {
                   <td>{table.table_name}</td>
                   <td>{table.capacity}</td>
                   <td data-table-id-status={table.table_id}>{table.status}</td>
+                  <td data-table-id-finish={table.table_id}>{finishButton(table.status)}</td>
                 </tr>
               );
             })}
