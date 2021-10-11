@@ -124,6 +124,19 @@ function tableIsOccupied(req, res, next) {
 }
 
 /**
+ * Checks if table is free
+ */
+ function tableIsFree(req, res, next) {
+  const table = res.locals.table;
+  if (table.status === "Free") {
+    const error = new Error(`Table ${table.table_name} is not occupied.`);
+    error.status = 400;
+    return next(error);
+  }
+  next();
+}
+
+/**
  * Checks if body data exists
  */
 function bodyDataExists(req, res, next) {
@@ -174,6 +187,19 @@ async function update(req, res, next) {
   res.json({ data });
 }
 
+/**
+ * Destroy reservation for a table
+ */
+async function destroyReservation(req, res) {
+  const updatedTable = {
+    ...res.locals.table,
+    status: "Free",
+    reservation_id: null,
+  };
+  const data = await service.update(updatedTable);
+  res.json({ data });
+}
+
 module.exports = {
   list: asyncErrorBoundary(list),
   create: [
@@ -192,4 +218,9 @@ module.exports = {
     asyncErrorBoundary(update),
   ],
   read: [asyncErrorBoundary(read)],
+  destroyReservation: [
+    asyncErrorBoundary(tableIdExists),
+    tableIsFree, 
+    asyncErrorBoundary(destroyReservation),
+  ],
 };
