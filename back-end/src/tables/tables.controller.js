@@ -115,7 +115,7 @@ function tableHasSufficientCapacity(req, res, next) {
  */
 function tableIsOccupied(req, res, next) {
   const table = res.locals.table;
-  if (table.status === "occupied") {
+  if (table.reservation_id) {
     const error = new Error(`Table ${table.table_name} is occupied.`);
     error.status = 400;
     return next(error);
@@ -128,7 +128,7 @@ function tableIsOccupied(req, res, next) {
  */
  function tableIsFree(req, res, next) {
   const table = res.locals.table;
-  if (table.status === "Free") {
+  if (!table.reservation_id) {
     const error = new Error(`Table ${table.table_name} is not occupied.`);
     error.status = 400;
     return next(error);
@@ -180,7 +180,6 @@ async function read(req, res) {
 async function update(req, res, next) {
   const updatedTable = {
     ...res.locals.table,
-    status: "occupied",
     reservation_id: req.body.data.reservation_id,
   };
   const data = await service.update(updatedTable);
@@ -193,7 +192,6 @@ async function update(req, res, next) {
 async function destroyReservation(req, res) {
   const updatedTable = {
     ...res.locals.table,
-    status: "Free",
     reservation_id: null,
   };
   const data = await service.update(updatedTable);
