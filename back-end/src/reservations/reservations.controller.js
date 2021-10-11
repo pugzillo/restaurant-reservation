@@ -157,8 +157,8 @@ async function reservationIdExists(req, res, next) {
   const reservation = await service.read(reservationId);
 
   if (!reservation) {
-    const error = new Error("Reservation id does not exist.");
-    error.status = 400;
+    const error = new Error(`Reservation id,${reservationId}, does not exist.`);
+    error.status = 404;
     return next(error);
   }
   res.locals.reservation = reservation;
