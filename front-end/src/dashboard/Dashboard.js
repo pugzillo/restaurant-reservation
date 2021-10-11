@@ -149,7 +149,7 @@ function Dashboard({ date }) {
                 <tr key={table.table_id}>
                   <td>{table.table_name}</td>
                   <td>{table.capacity}</td>
-                  <td data-table-id-status={table.table_id}>{table.status}</td>
+                  <td data-table-id-status={table.table_id}>{table.reservation_id ? 'occupied':'free'}</td>
                   <td data-table-id-finish={table.table_id}>
                     {finishButton(table.status, table.table_id)}
                   </td>
@@ -201,7 +201,7 @@ function Dashboard({ date }) {
                 data-dismiss="modal"
                 onClick={handleModalFinish}
               >
-                Finish
+                OK
               </button>
             </div>
           </div>
