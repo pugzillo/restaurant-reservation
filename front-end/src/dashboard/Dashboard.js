@@ -19,7 +19,7 @@ function Dashboard({ date }) {
   const [tableReservation, setTableReservation] = useState(null);
   const [tableReservationErrors, setTableReservationErrors] = useState(null);
 
-  useEffect(loadDashboard, [displayedDate, tableReservation]);
+  useEffect(loadDashboard, [displayedDate]);
 
   function loadDashboard() {
     const abortController = new AbortController();
@@ -44,16 +44,15 @@ function Dashboard({ date }) {
   const handleFinish = (event) => {
     setTableReservation(event.target.value);
   };
-  const finishButton = (status, tableId) => {
-    if (status === "occupied") {
+  const finishButton = (reservationId, tableId) => {
+    if (reservationId) {
       return (
         <button
           type="button"
           className="btn btn-secondary"
-          data-toggle="modal"
-          data-target="#exampleModal"
           value={tableId}
-          onClick={handleFinish}
+          data-table-id-finish={tableId}
+          onClick={handleModalFinish}
         >
           Finish
         </button>
@@ -62,10 +61,12 @@ function Dashboard({ date }) {
   };
 
   const handleModalFinish = (event) => {
-    const abortController = new AbortController();
-    removeReservation(tableReservation, abortController.signal)
-      .then(() => setTableReservation(null))
-      .catch(setTableReservationErrors);
+    if (window.confirm("Is this table ready to seat new guests?")) {
+      const abortController = new AbortController();
+      removeReservation(event.target.value, abortController.signal)
+        .then(() => loadDashboard())
+        .catch(setTableReservationErrors);
+    }
   };
 
   return (
@@ -150,8 +151,8 @@ function Dashboard({ date }) {
                   <td>{table.table_name}</td>
                   <td>{table.capacity}</td>
                   <td data-table-id-status={table.table_id}>{table.reservation_id ? 'occupied':'free'}</td>
-                  <td data-table-id-finish={table.table_id}>
-                    {finishButton(table.status, table.table_id)}
+                  <td>
+                    {finishButton(table.reservation_id, table.table_id)}
                   </td>
                 </tr>
               );
@@ -160,53 +161,8 @@ function Dashboard({ date }) {
         </table>
       </div>
 
-      {/* <!-- Modal --> */}
-      <div
-        className="modal fade"
-        id="exampleModal"
-        tabIndex="-1"
-        role="dialog"
-        aria-labelledby="exampleModalLabel"
-        aria-hidden="true"
-      >
-        <div className="modal-dialog" role="document">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title" id="exampleModalLabel">
-                Finish Reservation
-              </h5>
-              <button
-                type="button"
-                className="close"
-                data-dismiss="modal"
-                aria-label="Close"
-              >
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div className="modal-body">
-              Is this table ready to seat new guests? This cannot be undone.
-            </div>
-            <div className="modal-footer">
-              <button
-                type="button"
-                className="btn btn-secondary"
-                data-dismiss="modal"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                className="btn btn-primary"
-                data-dismiss="modal"
-                onClick={handleModalFinish}
-              >
-                OK
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+
+
     </main>
   );
 }

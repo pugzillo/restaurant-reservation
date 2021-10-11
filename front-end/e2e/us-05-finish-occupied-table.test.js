@@ -62,6 +62,8 @@ describe("US-05 - Finish an occupied table - E2E", () => {
         fullPage: true,
       });
 
+      console.log("before contasins occupided")
+
       const containsOccupied = await containsText(
         page,
         `[data-table-id-status="${table.table_id}"]`,
@@ -106,6 +108,8 @@ describe("US-05 - Finish an occupied table - E2E", () => {
         `[data-table-id-status="${table.table_id}"]`,
         "free"
       );
+
+      console.log("afterfree")
 
       expect(containsFree).toBe(true);
     });
