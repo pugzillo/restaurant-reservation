@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { listReservations, listTables } from "../utils/api";
+import { listReservations, listTables, removeReservation } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 import { today, previous, next } from "../utils/date-time";
 import { Link } from "react-router-dom";
@@ -12,36 +12,39 @@ import { Link } from "react-router-dom";
  */
 function Dashboard({ date }) {
   const [reservations, setReservations] = useState([]);
-  const [reservationsError, setReservationsError] = useState(null);
+  const [reservationErrors, setReservationErrors] = useState(null);
   const [displayedDate, setdisplayedDate] = useState(date);
   const [tables, setTables] = useState([]);
-  const [tablesError, setTablesError] = useState(null);
+  const [tablesErrors, setTablesErrors] = useState(null);
+  const [tableReservation, setTableReservation] = useState(null);
+  const [tableReservationErrors, setTableReservationErrors] = useState(null);
 
-  useEffect(loadDashboard, [displayedDate]);
+  useEffect(loadDashboard, [displayedDate, tableReservation]);
 
   function loadDashboard() {
     const abortController = new AbortController();
-    setReservationsError(null);
     listReservations({ date: displayedDate }, abortController.signal)
       .then(setReservations)
-      .catch(setReservationsError);
-    setTablesError(null);
+      .catch(setReservationErrors);
     listTables({}, abortController.signal)
       .then(setTables)
-      .catch(setTablesError);
+      .catch(setTablesErrors);
     return () => abortController.abort();
   }
 
-  const handleToday = (event) => {
+  const handleToday = () => {
     setdisplayedDate(today());
   };
-  const handleNext = (event) => {
+  const handleNext = () => {
     setdisplayedDate(next(displayedDate));
   };
-  const handlePrevious = (event) => {
+  const handlePrevious = () => {
     setdisplayedDate(previous(displayedDate));
   };
-  const finishButton = (status) => {
+  const handleFinish = (event) => {
+    setTableReservation(event.target.value);
+  };
+  const finishButton = (status, tableId) => {
     if (status === "occupied") {
       return (
         <button
@@ -49,20 +52,26 @@ function Dashboard({ date }) {
           className="btn btn-secondary"
           data-toggle="modal"
           data-target="#exampleModal"
+          value={tableId}
+          onClick={handleFinish}
         >
           Finish
         </button>
       );
     }
   };
-  const handleFinish = (event) => {
-    console.log("done")
+
+  const handleModalFinish = (event) => {
+    const abortController = new AbortController();
+    removeReservation(tableReservation, abortController.signal)
+      .then(() => setTableReservation(null))
+      .catch(setTableReservationErrors);
   };
 
   return (
     <main>
       <h1>Dashboard</h1>
-      <ErrorAlert error={reservationsError} />
+      <ErrorAlert error={reservationErrors} />
       <div className="d-md-flex mb-3">
         <h4 className="mb-0">Reservations for {displayedDate}</h4>
       </div>
@@ -87,6 +96,8 @@ function Dashboard({ date }) {
       </div>
 
       <div className="ReservationsTable">
+      <ErrorAlert error={tablesErrors} />
+      <ErrorAlert error={tableReservationErrors} />
         <table className="table table-striped">
           <thead className="thead-dark">
             <tr>
@@ -140,7 +151,7 @@ function Dashboard({ date }) {
                   <td>{table.capacity}</td>
                   <td data-table-id-status={table.table_id}>{table.status}</td>
                   <td data-table-id-finish={table.table_id}>
-                    {finishButton(table.status)}
+                    {finishButton(table.status, table.table_id)}
                   </td>
                 </tr>
               );
@@ -151,43 +162,44 @@ function Dashboard({ date }) {
 
       {/* <!-- Modal --> */}
       <div
-        class="modal fade"
+        className="modal fade"
         id="exampleModal"
-        tabindex="-1"
+        tabIndex="-1"
         role="dialog"
         aria-labelledby="exampleModalLabel"
         aria-hidden="true"
       >
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">
+        <div className="modal-dialog" role="document">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="exampleModalLabel">
                 Finish Reservation
               </h5>
               <button
                 type="button"
-                class="close"
+                className="close"
                 data-dismiss="modal"
                 aria-label="Close"
               >
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
-            <div class="modal-body">
+            <div className="modal-body">
               Is this table ready to seat new guests? This cannot be undone.
             </div>
-            <div class="modal-footer">
+            <div className="modal-footer">
               <button
                 type="button"
-                class="btn btn-secondary"
+                className="btn btn-secondary"
                 data-dismiss="modal"
               >
                 Cancel
               </button>
               <button
                 type="button"
-                class="btn btn-primary"
-                onClick={handleFinish}
+                className="btn btn-primary"
+                data-dismiss="modal"
+                onClick={handleModalFinish}
               >
                 Finish
               </button>
