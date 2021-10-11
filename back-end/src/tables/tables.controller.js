@@ -71,8 +71,8 @@ async function tableIdExists(req, res, next) {
   const tableId = req.params.table_id;
   const table = await service.read(tableId);
   if (!table) {
-    const error = new Error("table id does not exist");
-    error.status = 400;
+    const error = new Error(`table id, ${tableId}, does not exist`);
+    error.status = 404;
     return next(error);
   }
   res.locals.table = table;
