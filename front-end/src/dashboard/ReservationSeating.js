@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useHistory } from "react-router-dom";
-import { listTables, getReservation, seatReservation } from "../utils/api";
+import {
+  listTables,
+  getReservation,
+  seatReservation,
+  updateReservationStatus
+} from "../utils/api";
 import { Message } from "semantic-ui-react";
 
 /**
@@ -52,21 +57,9 @@ function ReservationSeating() {
     event.preventDefault();
     setFormErrors([]);
     seatReservation(reservation_id, selectedTable.table_id)
-    .then(() => history.push("/dashboard"))
-    .catch((err) => setFormErrors([...formErrors, err.message]));
-    // if (
-    //   selectedTable.capacity >= reservation.people &&
-    //   selectedTable.status !== "occupied"
-    // ) {
-    //   seatReservation(reservation_id, selectedTable.table_id)
-    //     .then(() => history.push("/dashboard"))
-    //     .catch((err) => setFormErrors([...formErrors, err.message]));
-    // } else {
-    //   setFormErrors([
-    //     ...formErrors,
-    //     "Selected table does not have the capacity for this reservation.",
-    //   ]);
-    // }
+      .then(() => updateReservationStatus(reservation_id, "seated"))
+      .then(() => history.push("/dashboard"))
+      .catch((err) => setFormErrors([...formErrors, err.message]));
   };
 
   const handleCancel = (event) => {
