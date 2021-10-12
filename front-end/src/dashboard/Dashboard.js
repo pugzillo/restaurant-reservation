@@ -41,9 +41,6 @@ function Dashboard({ date }) {
   const handlePrevious = () => {
     setdisplayedDate(previous(displayedDate));
   };
-  const handleFinish = (event) => {
-    setTableReservation(event.target.value);
-  };
   const finishButton = (reservationId, tableId) => {
     if (reservationId) {
       return (
