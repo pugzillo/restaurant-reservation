@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { listReservations, listTables, removeReservation } from "../utils/api";
+import {
+  listReservations,
+  listTables,
+  removeReservation,
+  updateReservationStatus,
+} from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 import { today, previous, next } from "../utils/date-time";
 import { Link } from "react-router-dom";
@@ -48,7 +53,7 @@ function Dashboard({ date }) {
           className="btn btn-secondary"
           value={tableId}
           data-table-id-finish={tableId}
-          onClick={handleModalFinish}
+          onClick={(event) => handleModalFinish(event, reservationId)}
         >
           Finish
         </button>
@@ -56,10 +61,11 @@ function Dashboard({ date }) {
     }
   };
 
-  const handleModalFinish = (event) => {
+  const handleModalFinish = (event, reservationId) => {
     if (window.confirm("Is this table ready to seat new guests?")) {
       const abortController = new AbortController();
       removeReservation(event.target.value, abortController.signal)
+        .then(() => updateReservationStatus(reservationId, "finished"))
         .then(() => loadDashboard())
         .catch(setTableReservationErrors);
     }
@@ -109,25 +115,29 @@ function Dashboard({ date }) {
           <tbody>
             {reservations.map((reservation) => {
               return (
-                <tr key={reservation.reservation_id}>
-                  <td>{reservation.first_name}</td>
-                  <td>{reservation.last_name}</td>
-                  <td>{reservation.mobile_number}</td>
-                  <td>{reservation.reservation_time}</td>
-                  <td>{reservation.status}</td>
-                  <td>
-                    {true && (
-                      <Link
-                        type="button"
-                        className="btn btn-secondary"
-                        href={`/reservations/${reservation.reservation_id}/seat`}
-                        to={`/reservations/${reservation.reservation_id}/seat`}
-                      >
-                        Seat
-                      </Link>
-                    )}
-                  </td>
-                </tr>
+                reservation.status !== "finished" && (
+                  <tr key={reservation.reservation_id}>
+                    <td>{reservation.first_name}</td>
+                    <td>{reservation.last_name}</td>
+                    <td>{reservation.mobile_number}</td>
+                    <td>{reservation.reservation_time}</td>
+                    <td data-reservation-id-status={reservation.reservation_id}>
+                      {reservation.status}
+                    </td>
+                    <td>
+                      {reservation.status === "booked" && (
+                        <Link
+                          type="button"
+                          className="btn btn-secondary"
+                          href={`/reservations/${reservation.reservation_id}/seat`}
+                          to={`/reservations/${reservation.reservation_id}/seat`}
+                        >
+                          Seat
+                        </Link>
+                      )}
+                    </td>
+                  </tr>
+                )
               );
             })}
           </tbody>
