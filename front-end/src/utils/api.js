@@ -186,3 +186,24 @@ export async function removeReservation(table_id, signal) {
   };
   return await fetchJson(url, options, {});
 }
+
+/**
+ * Update the status of a particular reservation.
+ * @returns {Promise<[reservation]>}
+ *  a promise that resolves to a reservation with an updated status.
+ */
+export async function updateReservationStatus(reservation_id, status, signal) {
+  const data = {
+    data: {
+      status: status,
+    },
+  };
+  const url = new URL(`${API_BASE_URL}/reservations/${reservation_id}/status`);
+  const options = {
+    method: "PUT",
+    headers,
+    body: JSON.stringify(data),
+    signal,
+  };
+  return await fetchJson(url, options, {});
+}

@@ -16,7 +16,6 @@ function Dashboard({ date }) {
   const [displayedDate, setdisplayedDate] = useState(date);
   const [tables, setTables] = useState([]);
   const [tablesErrors, setTablesErrors] = useState(null);
-  const [tableReservation, setTableReservation] = useState(null);
   const [tableReservationErrors, setTableReservationErrors] = useState(null);
 
   useEffect(loadDashboard, [displayedDate]);
@@ -115,7 +114,7 @@ function Dashboard({ date }) {
                   <td>{reservation.last_name}</td>
                   <td>{reservation.mobile_number}</td>
                   <td>{reservation.reservation_time}</td>
-                  <td>STATUS HERE</td>
+                  <td>{reservation.status}</td>
                   <td>
                     {true && (
                       <Link
