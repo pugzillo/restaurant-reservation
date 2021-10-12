@@ -190,6 +190,19 @@ async function read(req, res) {
   res.json({ data });
 }
 
+/**
+ * Update handler for reservation status
+ */
+async function update(req, res) {
+  const newStatus = req.body.data.status;
+  const updatedReservation = {
+    ...res.locals.reservation,
+    status: newStatus,
+  };
+  const data = await service.update(updatedReservation);
+  res.json({ data });
+}
+
 module.exports = {
   list: asyncErrorBoundary(list),
   create: [
@@ -202,5 +215,6 @@ module.exports = {
     reservationIsDuringRestaurantHours,
     asyncErrorBoundary(create),
   ],
-  read: [reservationIdExists, asyncErrorBoundary(read)],
+  read: [asyncErrorBoundary(reservationIdExists), asyncErrorBoundary(read)],
+  update: [asyncErrorBoundary(reservationIdExists), asyncErrorBoundary(update)],
 };

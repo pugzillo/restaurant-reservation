@@ -1,6 +1,5 @@
 const knex = require("../db/connection");
 
-// TODO: Change to show the reservations of the current date as the default
 function list(date) {
   return knex("reservations")
     .select("*")
@@ -19,8 +18,16 @@ function read(reservation_id) {
   return knex("reservations").select("*").where({ reservation_id }).first();
 }
 
+function update(updatedReservation) {
+  return knex("reservations")
+    .where({ reservation_id: updatedReservation.reservation_id })
+    .update(updatedReservation, "*")
+    .then((updatedRecords) => updatedRecords[0]);
+}
+
 module.exports = {
   list,
   create,
   read,
+  update,
 };
