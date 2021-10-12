@@ -94,8 +94,8 @@ function Dashboard({ date }) {
       </div>
 
       <div className="ReservationsTable">
-      <ErrorAlert error={tablesErrors} />
-      <ErrorAlert error={tableReservationErrors} />
+        <ErrorAlert error={tablesErrors} />
+        <ErrorAlert error={tableReservationErrors} />
         <table className="table table-striped">
           <thead className="thead-dark">
             <tr>
@@ -103,6 +103,7 @@ function Dashboard({ date }) {
               <th scope="col">Last Name</th>
               <th scope="col">Mobile Number</th>
               <th scope="col">Reservation Time</th>
+              <th scope="col">Status</th>
               <th scope="col"></th>
             </tr>
           </thead>
@@ -114,15 +115,18 @@ function Dashboard({ date }) {
                   <td>{reservation.last_name}</td>
                   <td>{reservation.mobile_number}</td>
                   <td>{reservation.reservation_time}</td>
+                  <td>STATUS HERE</td>
                   <td>
-                    <Link
-                      type="button"
-                      className="btn btn-secondary"
-                      href={`/reservations/${reservation.reservation_id}/seat`}
-                      to={`/reservations/${reservation.reservation_id}/seat`}
-                    >
-                      Seat
-                    </Link>
+                    {true && (
+                      <Link
+                        type="button"
+                        className="btn btn-secondary"
+                        href={`/reservations/${reservation.reservation_id}/seat`}
+                        to={`/reservations/${reservation.reservation_id}/seat`}
+                      >
+                        Seat
+                      </Link>
+                    )}
                   </td>
                 </tr>
               );
@@ -147,19 +151,16 @@ function Dashboard({ date }) {
                 <tr key={table.table_id}>
                   <td>{table.table_name}</td>
                   <td>{table.capacity}</td>
-                  <td data-table-id-status={table.table_id}>{table.reservation_id ? 'occupied':'free'}</td>
-                  <td>
-                    {finishButton(table.reservation_id, table.table_id)}
+                  <td data-table-id-status={table.table_id}>
+                    {table.reservation_id ? "occupied" : "free"}
                   </td>
+                  <td>{finishButton(table.reservation_id, table.table_id)}</td>
                 </tr>
               );
             })}
           </tbody>
         </table>
       </div>
-
-
-
     </main>
   );
 }
