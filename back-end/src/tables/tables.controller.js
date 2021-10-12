@@ -71,8 +71,8 @@ async function tableIdExists(req, res, next) {
   const tableId = req.params.table_id;
   const table = await service.read(tableId);
   if (!table) {
-    const error = new Error("table id does not exist");
-    error.status = 400;
+    const error = new Error(`table id, ${tableId}, does not exist`);
+    error.status = 404;
     return next(error);
   }
   res.locals.table = table;
@@ -115,8 +115,21 @@ function tableHasSufficientCapacity(req, res, next) {
  */
 function tableIsOccupied(req, res, next) {
   const table = res.locals.table;
-  if (table.status === "occupied") {
+  if (table.reservation_id) {
     const error = new Error(`Table ${table.table_name} is occupied.`);
+    error.status = 400;
+    return next(error);
+  }
+  next();
+}
+
+/**
+ * Checks if table is free
+ */
+ function tableIsFree(req, res, next) {
+  const table = res.locals.table;
+  if (!table.reservation_id) {
+    const error = new Error(`Table ${table.table_name} is not occupied.`);
     error.status = 400;
     return next(error);
   }
@@ -167,8 +180,19 @@ async function read(req, res) {
 async function update(req, res, next) {
   const updatedTable = {
     ...res.locals.table,
-    status: "occupied",
     reservation_id: req.body.data.reservation_id,
+  };
+  const data = await service.update(updatedTable);
+  res.json({ data });
+}
+
+/**
+ * Destroy reservation for a table
+ */
+async function destroyReservation(req, res) {
+  const updatedTable = {
+    ...res.locals.table,
+    reservation_id: null,
   };
   const data = await service.update(updatedTable);
   res.json({ data });
@@ -192,4 +216,9 @@ module.exports = {
     asyncErrorBoundary(update),
   ],
   read: [asyncErrorBoundary(read)],
+  destroyReservation: [
+    asyncErrorBoundary(tableIdExists),
+    tableIsFree, 
+    asyncErrorBoundary(destroyReservation),
+  ],
 };

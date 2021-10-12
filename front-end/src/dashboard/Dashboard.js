@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { listReservations, listTables } from "../utils/api";
+import { listReservations, listTables, removeReservation } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 import { today, previous, next } from "../utils/date-time";
 import { Link } from "react-router-dom";
@@ -12,40 +12,67 @@ import { Link } from "react-router-dom";
  */
 function Dashboard({ date }) {
   const [reservations, setReservations] = useState([]);
-  const [reservationsError, setReservationsError] = useState(null);
+  const [reservationErrors, setReservationErrors] = useState(null);
   const [displayedDate, setdisplayedDate] = useState(date);
   const [tables, setTables] = useState([]);
-  const [tablesError, setTablesError] = useState(null);
+  const [tablesErrors, setTablesErrors] = useState(null);
+  const [tableReservation, setTableReservation] = useState(null);
+  const [tableReservationErrors, setTableReservationErrors] = useState(null);
 
   useEffect(loadDashboard, [displayedDate]);
 
   function loadDashboard() {
     const abortController = new AbortController();
-    setReservationsError(null);
     listReservations({ date: displayedDate }, abortController.signal)
       .then(setReservations)
-      .catch(setReservationsError);
-    setTablesError(null);
+      .catch(setReservationErrors);
     listTables({}, abortController.signal)
       .then(setTables)
-      .catch(setTablesError);
+      .catch(setTablesErrors);
     return () => abortController.abort();
   }
 
-  const handleToday = (event) => {
+  const handleToday = () => {
     setdisplayedDate(today());
   };
-  const handleNext = (event) => {
+  const handleNext = () => {
     setdisplayedDate(next(displayedDate));
   };
-  const handlePrevious = (event) => {
+  const handlePrevious = () => {
     setdisplayedDate(previous(displayedDate));
+  };
+  const handleFinish = (event) => {
+    setTableReservation(event.target.value);
+  };
+  const finishButton = (reservationId, tableId) => {
+    if (reservationId) {
+      return (
+        <button
+          type="button"
+          className="btn btn-secondary"
+          value={tableId}
+          data-table-id-finish={tableId}
+          onClick={handleModalFinish}
+        >
+          Finish
+        </button>
+      );
+    }
+  };
+
+  const handleModalFinish = (event) => {
+    if (window.confirm("Is this table ready to seat new guests?")) {
+      const abortController = new AbortController();
+      removeReservation(event.target.value, abortController.signal)
+        .then(() => loadDashboard())
+        .catch(setTableReservationErrors);
+    }
   };
 
   return (
     <main>
       <h1>Dashboard</h1>
-      <ErrorAlert error={reservationsError} />
+      <ErrorAlert error={reservationErrors} />
       <div className="d-md-flex mb-3">
         <h4 className="mb-0">Reservations for {displayedDate}</h4>
       </div>
@@ -70,6 +97,8 @@ function Dashboard({ date }) {
       </div>
 
       <div className="ReservationsTable">
+      <ErrorAlert error={tablesErrors} />
+      <ErrorAlert error={tableReservationErrors} />
         <table className="table table-striped">
           <thead className="thead-dark">
             <tr>
@@ -112,6 +141,7 @@ function Dashboard({ date }) {
               <th scope="col">Table Name</th>
               <th scope="col">Capacity</th>
               <th scope="col">Seated</th>
+              <th scope="col">Finish</th>
             </tr>
           </thead>
           <tbody>
@@ -120,13 +150,19 @@ function Dashboard({ date }) {
                 <tr key={table.table_id}>
                   <td>{table.table_name}</td>
                   <td>{table.capacity}</td>
-                  <td data-table-id-status={table.table_id}>{table.status}</td>
+                  <td data-table-id-status={table.table_id}>{table.reservation_id ? 'occupied':'free'}</td>
+                  <td>
+                    {finishButton(table.reservation_id, table.table_id)}
+                  </td>
                 </tr>
               );
             })}
           </tbody>
         </table>
       </div>
+
+
+
     </main>
   );
 }

@@ -143,7 +143,6 @@ export async function createTable(table, signal) {
  */
 
 export async function listTables(params, signal) {
-  console.log("Banana!")
   const url = new URL(`${API_BASE_URL}/tables`);
   Object.entries(params).forEach(([key, value]) =>
     url.searchParams.append(key, value.toString())
@@ -157,7 +156,6 @@ export async function listTables(params, signal) {
  *  a promise that resolves to a possibly empty table object in the database.
  */
 export async function seatReservation(reservation_id, table_id, signal) {
-  console.log("APPLE!")
   const data = {
     data: {
       reservation_id: reservation_id,
@@ -169,6 +167,21 @@ export async function seatReservation(reservation_id, table_id, signal) {
     method: "PUT",
     headers,
     body: JSON.stringify(data),
+    signal,
+  };
+  return await fetchJson(url, options, {});
+}
+
+/**
+ * Remove a reservation at a specific table.
+ * @returns {Promise<[table]>}
+ *  a promise that resolves to an empty table without a reservation.
+ */
+export async function removeReservation(table_id, signal) {
+  const url = new URL(`${API_BASE_URL}/tables/${table_id}/seat`);
+  const options = {
+    method: "DELETE",
+    headers,
     signal,
   };
   return await fetchJson(url, options, {});
