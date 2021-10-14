@@ -166,6 +166,34 @@ async function reservationIdExists(req, res, next) {
 }
 
 /**
+ * Checks if status is unknown
+ */
+function reservationStatusIsUnknown(req, res, next) {
+  const reservation = res.locals.reservation;
+  const validStatuses = ["booked", "seated", "finished"];
+  if (!validStatuses.includes(reservation.status)) {
+    const error = new Error(`Reservation status is does not exist.`);
+    error.status = 400;
+    return next(error);
+  }
+  next();
+}
+
+
+/**
+ * Checks if status is finished
+ */
+function reservationStatusIsFinished(req, res, next) {
+  const reservation = res.locals.reservation;
+  if (reservation.status === "finished") {
+    const error = new Error("Reservation status is finished.");
+    error.status = 400;
+    return next(error);
+  }
+  next();
+}
+
+/**
  * List handler for reservation resources
  */
 async function list(req, res) {
@@ -216,5 +244,10 @@ module.exports = {
     asyncErrorBoundary(create),
   ],
   read: [asyncErrorBoundary(reservationIdExists), asyncErrorBoundary(read)],
-  update: [asyncErrorBoundary(reservationIdExists), asyncErrorBoundary(update)],
+  update: [
+    asyncErrorBoundary(reservationIdExists),
+    reservationStatusIsUnknown,
+    reservationStatusIsFinished,
+    asyncErrorBoundary(update),
+  ],
 };
