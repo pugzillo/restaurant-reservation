@@ -103,8 +103,9 @@ describe("US-06 - Reservation status", () => {
         .set("Accept", "application/json")
         .send({ data: { status: "unknown" } });
 
-      expect(response.body.error).toContain("unknown");
       expect(response.status).toBe(400);
+      expect(response.body.error).toContain("unknown");
+      
     });
 
     test("returns 400 if status is currently finished (a finished reservation cannot be updated)", async () => {
@@ -250,7 +251,7 @@ describe("US-06 - Reservation status", () => {
       tableOne = await knex("tables").orderBy("table_name").first();
     });
 
-    test("does not include 'finished' reservations", async () => {
+    test.only("does not include 'finished' reservations", async () => {
       expect(tableOne).not.toBeUndefined();
       expect(reservationOne).not.toBeUndefined();
 
@@ -288,7 +289,8 @@ describe("US-06 - Reservation status", () => {
 });
 
 function asDateString(date) {
-  return `${date.getFullYear().toString(10)}-${(date.getMonth() + 1)
+  const d = new Date(date);
+  return `${d.getFullYear().toString(10)}-${(d.getMonth() + 1)
     .toString(10)
-    .padStart(2, "0")}-${date.getDate().toString(10).padStart(2, "0")}`;
+    .padStart(2, "0")}-${d.getDate().toString(10).padStart(2, "0")}`;
 }
