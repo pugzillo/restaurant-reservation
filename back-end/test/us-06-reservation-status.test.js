@@ -251,7 +251,7 @@ describe("US-06 - Reservation status", () => {
       tableOne = await knex("tables").orderBy("table_name").first();
     });
 
-    test.only("does not include 'finished' reservations", async () => {
+    test("does not include 'finished' reservations", async () => {
       expect(tableOne).not.toBeUndefined();
       expect(reservationOne).not.toBeUndefined();
 
