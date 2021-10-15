@@ -91,6 +91,20 @@ async function reservationIdExists(req, res, next) {
     return next(error);
   }
   res.locals.reservationSize = reservation.people; // reservation size to local var
+  res.locals.reservationStatus = reservation.status;
+  next();
+}
+
+/**
+ * Checks if reservation status is seated
+ */
+function reservationStatusIsSeated(req, res, next) {
+  const status = res.locals.reservationStatus;
+  if (status === "seated") {
+    const error = new Error(`Reservation is already seated`);
+    error.status = 404;
+    return next(error);
+  }
   next();
 }
 
@@ -126,7 +140,7 @@ function tableIsOccupied(req, res, next) {
 /**
  * Checks if table is free
  */
- function tableIsFree(req, res, next) {
+function tableIsFree(req, res, next) {
   const table = res.locals.table;
   if (!table.reservation_id) {
     const error = new Error(`Table ${table.table_name} is not occupied.`);
@@ -183,7 +197,7 @@ async function update(req, res, next) {
     reservation_id: req.body.data.reservation_id,
   };
   const data = await service.update(updatedTable);
-  res.json({ data });
+  res.status(200).json({ data });
 }
 
 /**
@@ -211,6 +225,7 @@ module.exports = {
     seatingInputIsValid,
     bodyDataExists,
     reservationIdExists,
+    reservationStatusIsSeated,
     tableHasSufficientCapacity,
     tableIsOccupied,
     asyncErrorBoundary(update),
@@ -218,7 +233,7 @@ module.exports = {
   read: [asyncErrorBoundary(read)],
   destroyReservation: [
     asyncErrorBoundary(tableIdExists),
-    tableIsFree, 
+    tableIsFree,
     asyncErrorBoundary(destroyReservation),
   ],
 };

@@ -169,10 +169,9 @@ async function reservationIdExists(req, res, next) {
  * Checks if status is unknown
  */
 function reservationStatusIsUnknown(req, res, next) {
-  const reservation = res.locals.reservation;
-  const validStatuses = ["booked", "seated", "finished"];
-  if (!validStatuses.includes(reservation.status)) {
-    const error = new Error(`Reservation status is does not exist.`);
+  const status = req.body.data.status;
+  if (!["booked", "seated", "finished"].includes(status)) {
+    const error = new Error("Reservation status is unknown.");
     error.status = 400;
     return next(error);
   }
@@ -183,9 +182,22 @@ function reservationStatusIsUnknown(req, res, next) {
  * Checks if status is finished; cannot update the reservation
  */
 function reservationStatusIsFinished(req, res, next) {
-  const reservation = res.locals.reservation;
-  if (reservation.status === "finished") {
+  const status = req.body.data.status;
+  if (status === "finished") {
     const error = new Error("Reservation status is finished.");
+    error.status = 400;
+    return next(error);
+  }
+  next();
+}
+
+/**
+ * Checks if status is seated; cannot update the reservation
+ */
+ function reservationStatusIsSeated(req, res, next) {
+  const status = req.body.data.status;
+  if (status === "seated") {
+    const error = new Error("Reservation status is seated.");
     error.status = 400;
     return next(error);
   }
@@ -197,7 +209,7 @@ function reservationStatusIsFinished(req, res, next) {
  */
 function reservationStatusIsSeatedOrFinished(req, res, next) {
   const reservation = req.body.data;
-  if (['seated', 'finished'].includes(reservation.status)) {
+  if (["seated", "finished"].includes(reservation.status)) {
     const error = new Error(`Reservation status is ${reservation.status}.`);
     error.status = 400;
     return next(error);
@@ -263,4 +275,5 @@ module.exports = {
     reservationStatusIsFinished,
     asyncErrorBoundary(update),
   ],
+  reservationStatusIsSeated,
 };
