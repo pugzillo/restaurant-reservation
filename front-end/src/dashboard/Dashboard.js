@@ -64,7 +64,7 @@ function Dashboard({ date }) {
   const handleModalFinish = (event, reservationId) => {
     if (window.confirm("Is this table ready to seat new guests?")) {
       const abortController = new AbortController();
-      removeReservation(event.target.value, abortController.signal)
+      removeReservation(event.target.value, reservationId, abortController.signal)
         .then(() => updateReservationStatus(reservationId, "finished"))
         .then(() => loadDashboard())
         .catch(setTableReservationErrors);

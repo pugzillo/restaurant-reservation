@@ -177,11 +177,17 @@ export async function seatReservation(reservation_id, table_id, signal) {
  * @returns {Promise<[table]>}
  *  a promise that resolves to an empty table without a reservation.
  */
-export async function removeReservation(table_id, signal) {
+export async function removeReservation(table_id, reservation_id, signal) {
+  const data = {
+    data: {
+      reservation_id: reservation_id,
+    },
+  };
   const url = new URL(`${API_BASE_URL}/tables/${table_id}/seat`);
   const options = {
     method: "DELETE",
     headers,
+    body: JSON.stringify(data),
     signal,
   };
   return await fetchJson(url, options, {});
