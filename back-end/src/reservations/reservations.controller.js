@@ -182,7 +182,7 @@ function reservationStatusIsUnknown(req, res, next) {
  * Checks if status is finished; cannot update the reservation
  */
 function reservationStatusIsFinished(req, res, next) {
-  const status = req.body.data.status;
+  const status = res.locals.reservation.status;
   if (status === "finished") {
     const error = new Error("Reservation status is finished.");
     error.status = 400;
@@ -252,7 +252,7 @@ async function update(req, res) {
     status: newStatus,
   };
   const data = await service.update(updatedReservation);
-  res.json({ data });
+  res.status(200).json({ data });
 }
 
 module.exports = {

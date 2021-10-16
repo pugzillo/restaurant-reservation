@@ -102,7 +102,7 @@ function reservationStatusIsSeated(req, res, next) {
   const status = res.locals.reservation.status;
   if (status === "seated") {
     const error = new Error(`Reservation is already seated`);
-    error.status = 404;
+    error.status = 400;
     return next(error);
   }
   next();
