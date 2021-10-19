@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { listReservations } from "../utils/api";
+import { useHistory } from "react-router-dom";
 import ErrorAlert from "../layout/ErrorAlert";
 
 function Search() {
+  const history = useHistory();
   const [mobileNumber, setMobileNumber] = useState("");
   const [reservations, setReservations] = useState([]);
   const [reservationErrors, setReservationErrors] = useState();
@@ -21,13 +23,14 @@ function Search() {
 
   const submitHandler = (event) => {
     event.preventDefault();
+    history.push(`/search?mobile_number=${mobileNumber}`);
     loadSearchResults();
   };
 
   return (
     <div className="search">
       <h1>Search</h1>
-      {reservationErrors && (<ErrorAlert error={reservationErrors} />)}
+      {reservationErrors && <ErrorAlert error={reservationErrors} />}
 
       <form onSubmit={submitHandler}>
         <div className="form-group">
