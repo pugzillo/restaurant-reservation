@@ -1,6 +1,7 @@
 const service = require("./tables.service");
 const reservationService = require("../reservations/reservations.service");
 const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
+const knex = require("../db/connection");
 
 /**
  * Checks if the required fields exist
@@ -90,7 +91,20 @@ async function reservationIdExists(req, res, next) {
     error.status = 404;
     return next(error);
   }
-  res.locals.reservationSize = reservation.people; // reservation size to local var
+  res.locals.reservation = reservation; // save reservation to local var
+  next();
+}
+
+/**
+ * Checks if reservation status is seated
+ */
+function reservationStatusIsSeated(req, res, next) {
+  const status = res.locals.reservation.status;
+  if (status === "seated") {
+    const error = new Error(`Reservation is already seated`);
+    error.status = 400;
+    return next(error);
+  }
   next();
 }
 
@@ -98,7 +112,7 @@ async function reservationIdExists(req, res, next) {
  * Checks if table has sufficient capacity
  */
 function tableHasSufficientCapacity(req, res, next) {
-  const partySize = res.locals.reservationSize;
+  const partySize = res.locals.reservation.people;
   const table = res.locals.table;
   if (partySize > table.capacity) {
     const error = new Error(
@@ -126,7 +140,7 @@ function tableIsOccupied(req, res, next) {
 /**
  * Checks if table is free
  */
- function tableIsFree(req, res, next) {
+function tableIsFree(req, res, next) {
   const table = res.locals.table;
   if (!table.reservation_id) {
     const error = new Error(`Table ${table.table_name} is not occupied.`);
@@ -175,27 +189,48 @@ async function read(req, res) {
 }
 
 /**
- * Update handler for tables seating
+ * Update handler for tables seating; also updates the reservation status using transactions
  */
 async function update(req, res, next) {
   const updatedTable = {
     ...res.locals.table,
     reservation_id: req.body.data.reservation_id,
   };
-  const data = await service.update(updatedTable);
-  res.json({ data });
+  const updatedReservation = {
+    ...res.locals.reservation,
+    status: "seated",
+  };
+  try {
+    await knex.transaction(async (trx) => {
+      const tableData = await service.update(updatedTable);
+      await reservationService.update(updatedReservation);
+      res.status(200).json({ tableData });
+    });
+  } catch (error) {
+    next(error);
+  }
 }
 
 /**
  * Destroy reservation for a table
  */
-async function destroyReservation(req, res) {
+async function destroyReservation(req, res, next) {
   const updatedTable = {
     ...res.locals.table,
     reservation_id: null,
   };
-  const data = await service.update(updatedTable);
-  res.json({ data });
+  const updatedReservation = {
+    ...res.locals.reservation,
+    status: "finished",
+  };
+  console.log(updatedReservation);
+  try {
+    const tableData = await service.update(updatedTable);
+    await reservationService.update(updatedReservation);
+    res.status(200).json({ tableData });
+  } catch (error) {
+    next(error);
+  }
 }
 
 module.exports = {
@@ -211,6 +246,7 @@ module.exports = {
     seatingInputIsValid,
     bodyDataExists,
     reservationIdExists,
+    reservationStatusIsSeated,
     tableHasSufficientCapacity,
     tableIsOccupied,
     asyncErrorBoundary(update),
@@ -218,7 +254,8 @@ module.exports = {
   read: [asyncErrorBoundary(read)],
   destroyReservation: [
     asyncErrorBoundary(tableIdExists),
-    tableIsFree, 
+    asyncErrorBoundary(reservationIdExists),
+    tableIsFree,
     asyncErrorBoundary(destroyReservation),
   ],
 };

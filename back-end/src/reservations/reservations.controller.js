@@ -153,6 +153,7 @@ function reservationIsDuringRestaurantHours(req, res, next) {
  * Checks if reservation_id exists
  */
 async function reservationIdExists(req, res, next) {
+  console.log("exists")
   const reservationId = req.params.reservation_id;
   const reservation = await service.read(reservationId);
 
@@ -162,6 +163,60 @@ async function reservationIdExists(req, res, next) {
     return next(error);
   }
   res.locals.reservation = reservation;
+  next();
+}
+
+/**
+ * Checks if status is unknown
+ */
+function reservationStatusIsUnknown(req, res, next) {
+  console.log("unknown")
+  const status = req.body.data.status;
+  if (!["booked", "seated", "finished"].includes(status)) {
+    const error = new Error("Reservation status is unknown.");
+    error.status = 400;
+    return next(error);
+  }
+  next();
+}
+
+// /**
+//  * Checks if status is finished; cannot update the reservation
+//  */
+// function reservationStatusIsFinished(req, res, next) {
+//   console.log("finished")
+//   const status = res.locals.reservation.status;
+//   if (status === "finished") {
+//     const error = new Error("Reservation status is finished.");
+//     error.status = 400;
+//     return next(error);
+//   }
+//   next();
+// }
+
+/**
+ * Checks if status is seated; cannot update the reservation
+ */
+ function reservationStatusIsSeated(req, res, next) {
+  const status = req.body.data.status;
+  if (status === "seated") {
+    const error = new Error("Reservation status is seated.");
+    error.status = 400;
+    return next(error);
+  }
+  next();
+}
+
+/**
+ * Checks if status is seated or finished; cannot create the reservation
+ */
+function reservationStatusIsSeatedOrFinished(req, res, next) {
+  const reservation = req.body.data;
+  if (["seated", "finished"].includes(reservation.status)) {
+    const error = new Error(`Reservation status is ${reservation.status}.`);
+    error.status = 400;
+    return next(error);
+  }
   next();
 }
 
@@ -190,6 +245,20 @@ async function read(req, res) {
   res.json({ data });
 }
 
+/**
+ * Update handler for reservation status
+ */
+async function update(req, res) {
+  console.log("update")
+  const newStatus = req.body.data.status;
+  const updatedReservation = {
+    ...res.locals.reservation,
+    status: newStatus,
+  };
+  const data = await service.update(updatedReservation);
+  res.status(200).json({ data });
+}
+
 module.exports = {
   list: asyncErrorBoundary(list),
   create: [
@@ -200,7 +269,15 @@ module.exports = {
     reservationIsNotOnTuesday,
     reservationIsInTheFuture,
     reservationIsDuringRestaurantHours,
+    reservationStatusIsSeatedOrFinished,
     asyncErrorBoundary(create),
   ],
-  read: [reservationIdExists, asyncErrorBoundary(read)],
+  read: [asyncErrorBoundary(reservationIdExists), asyncErrorBoundary(read)],
+  update: [
+    asyncErrorBoundary(reservationIdExists),
+    reservationStatusIsUnknown,
+    // reservationStatusIsFinished,
+    asyncErrorBoundary(update),
+  ],
+  reservationStatusIsSeated,
 };
