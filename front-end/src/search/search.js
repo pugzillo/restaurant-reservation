@@ -43,36 +43,40 @@ function Search() {
         </button>
       </form>
 
-      <div className="SearchResults">
-        <table className="table table-striped">
-          <thead className="thead-dark">
-            <tr>
-              <th scope="col">First Name</th>
-              <th scope="col">Last Name</th>
-              <th scope="col">Mobile Number</th>
-              <th scope="col">Reservation Date</th>
-              <th scope="col">Reservation Time</th>
-              <th scope="col">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {reservations.map((reservation) => {
-              return (
-                <tr key={reservation.reservation_id}>
-                  <td>{reservation.first_name}</td>
-                  <td>{reservation.last_name}</td>
-                  <td>{reservation.mobile_number}</td>
-                  <td>{reservation.reservation_date}</td>
-                  <td>{reservation.reservation_time}</td>
-                  <td data-reservation-id-status={reservation.reservation_id}>
-                    {reservation.status}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+      {reservations.length > 0 ? (
+        <div className="SearchResults">
+          <table className="table table-striped">
+            <thead className="thead-dark">
+              <tr>
+                <th scope="col">First Name</th>
+                <th scope="col">Last Name</th>
+                <th scope="col">Mobile Number</th>
+                <th scope="col">Reservation Date</th>
+                <th scope="col">Reservation Time</th>
+                <th scope="col">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {reservations.map((reservation) => {
+                return (
+                  <tr key={reservation.reservation_id}>
+                    <td>{reservation.first_name}</td>
+                    <td>{reservation.last_name}</td>
+                    <td>{reservation.mobile_number}</td>
+                    <td>{reservation.reservation_date}</td>
+                    <td>{reservation.reservation_time}</td>
+                    <td data-reservation-id-status={reservation.reservation_id}>
+                      {reservation.status}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        "No reservations found"
+      )}
     </div>
   );
 }
