@@ -223,8 +223,8 @@ function reservationStatusIsSeatedOrFinished(req, res, next) {
  * List handler for reservation resources
  */
 async function list(req, res) {
-  const { date, mobile_phone } = req.query;
-  const data = await service.list(date, mobile_phone);
+  const { date, mobile_number } = req.query;
+  const data = await service.list(date, mobile_number);
   res.json({ data });
 }
 
