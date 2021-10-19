@@ -1,11 +1,15 @@
 const knex = require("../db/connection");
 
-function list(date) {
-  return knex("reservations")
-    .select("*")
-    .where({ reservation_date: date })
-    .andWhereNot({ status: "finished" })
-    .orderBy("reservation_time");
+function list(date, mobile_number) {
+  if (date && !mobile_number) {
+    return knex("reservations")
+      .select("*")
+      .where({ reservation_date: date })
+      .andWhereNot({ status: "finished" })
+      .orderBy("reservation_time");
+  } else {
+    return search(mobile_number);
+  }
 }
 
 function create(reservation) {
@@ -35,11 +39,9 @@ function search(mobile_number) {
     .orderBy("reservation_date");
 }
 
-
 module.exports = {
   list,
   create,
   read,
   update,
-  search,
 };
