@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { listReservations } from "../utils/api";
+import ErrorAlert from "../layout/ErrorAlert";
 
 function Search() {
-  const [mobileNumber, setMobileNumber] = useState(null);
+  const [mobileNumber, setMobileNumber] = useState("");
   const [reservations, setReservations] = useState([]);
-  const [reservationErrors, setReservationErrors] = useState(null);
+  const [reservationErrors, setReservationErrors] = useState();
 
   const loadSearchResults = () => {
     const abortController = new AbortController();
@@ -14,19 +15,19 @@ function Search() {
     return () => abortController.abort();
   };
 
-  useEffect(loadSearchResults, [mobileNumber]);
-
   const changeHandler = (event) => {
     setMobileNumber(event.target.value);
   };
 
   const submitHandler = (event) => {
     event.preventDefault();
+    loadSearchResults();
   };
 
   return (
     <div className="search">
       <h1>Search</h1>
+      {reservationErrors && (<ErrorAlert error={reservationErrors} />)}
 
       <form onSubmit={submitHandler}>
         <div className="form-group">
