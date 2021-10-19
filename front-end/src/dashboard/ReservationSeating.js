@@ -4,7 +4,7 @@ import {
   listTables,
   getReservation,
   seatReservation,
-  updateReservationStatus
+  updateReservationStatus,
 } from "../utils/api";
 import { Message } from "semantic-ui-react";
 
@@ -15,7 +15,8 @@ function ReservationSeating() {
   const { reservation_id } = useParams();
   const [tables, setTables] = useState([]); // state for the list of tables
   const [reservation, setReservation] = useState({}); // state for the reservation
-  const [formErrors, setFormErrors] = useState([]);
+  const [tableErrors, setTableErrors] = useState([]);
+  const [reservationErrors, setReservationErrors] = useState([]);
   const [selectedTable, setSelectedTable] = useState(null);
 
   useEffect(loadReservation, [reservation_id]);
@@ -24,20 +25,18 @@ function ReservationSeating() {
   // loads reservation information
   function loadReservation() {
     const abortController = new AbortController();
-    setFormErrors([]);
     getReservation(reservation_id, {}, abortController.signal)
       .then(setReservation)
-      .catch((err) => setFormErrors([...formErrors, err.message]));
+      .catch(setReservationErrors);
     return () => abortController.abort();
   }
 
   // Loads the dropdown
   function loadDropDown() {
     const abortController = new AbortController();
-    setFormErrors([]);
     listTables({}, abortController.signal)
       .then(setTables)
-      .catch((err) => setFormErrors([...formErrors, err.message]));
+      .catch(setTableErrors);
     return () => abortController.abort();
   }
 
@@ -55,11 +54,10 @@ function ReservationSeating() {
   // Changes form when submitted
   const submitHandler = (event) => {
     event.preventDefault();
-    setFormErrors([]);
     seatReservation(reservation_id, selectedTable.table_id)
       .then(() => updateReservationStatus(reservation_id, "seated"))
       .then(() => history.push("/dashboard"))
-      .catch((err) => setFormErrors([...formErrors, err.message]));
+      .catch(setReservationErrors);
   };
 
   const handleCancel = (event) => {
@@ -69,17 +67,26 @@ function ReservationSeating() {
   return (
     <div className="ReservationSeating">
       <h1>Seat a Reservation</h1>
-      {formErrors.length !== 0 && (
+      {reservationErrors.length !== 0 && (
         <Message negative className="alert alert-danger">
           <Message.Header>Warning:</Message.Header>
           <ul>
-            {formErrors.map((err) => {
+            {reservationErrors.map((err) => {
               return <li>{err}</li>;
             })}
           </ul>
         </Message>
       )}
-      {console.log(formErrors)}
+      {tableErrors.length !== 0 && (
+        <Message negative className="alert alert-danger">
+          <Message.Header>Warning:</Message.Header>
+          <ul>
+            {tableErrors.map((err) => {
+              return <li>{err}</li>;
+            })}
+          </ul>
+        </Message>
+      )}
       <form onSubmit={submitHandler}>
         <div className="form-group row">
           <div className="col-auto my-1">
