@@ -7,6 +7,7 @@ import NewTableForm from "../tables/new-table-form";
 import NotFound from "./NotFound";
 import { today } from "../utils/date-time";
 import ReservationSeating from "../dashboard/ReservationSeating";
+import Search from "../search/search";
 
 /**
  * Retrieves query parameters of a URL via URLSearchParams
@@ -45,6 +46,9 @@ function Routes() {
       </Route>
       <Route path="/dashboard">
         <Dashboard date={query.get("date") ? query.get("date") : today()} />
+      </Route>
+      <Route path="/search">
+        <Search />
       </Route>
       <Route>
         <NotFound />
