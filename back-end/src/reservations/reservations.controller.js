@@ -168,7 +168,6 @@ async function reservationIdExists(req, res, next) {
  * Checks if status is unknown
  */
 function reservationStatusIsUnknown(req, res, next) {
-  console.log("unknown")
   const status = req.body.data.status;
   if (!["booked", "seated", "finished", "cancelled"].includes(status)) {
     const error = new Error("Reservation status is unknown.");
@@ -290,7 +289,15 @@ module.exports = {
   ],
   update: [
     asyncErrorBoundary(reservationIdExists),
+    requiredReservationFieldsExist,
+    peopleIsInteger,
+    reservationDateIsDate,
+    reservationTimeIsTime,
+    reservationIsNotOnTuesday,
+    reservationIsInTheFuture,
+    reservationIsDuringRestaurantHours,
     reservationStatusIsUnknown,
+    reservationStatusIsSeatedOrFinished,
     asyncErrorBoundary(update),
   ],
   reservationStatusIsSeated,
