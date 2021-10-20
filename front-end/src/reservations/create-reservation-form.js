@@ -52,6 +52,7 @@ function CreateReservationForm() {
               type="text"
               name="first_name"
               onChange={changeHandler}
+              value={form.first_name}
               required
             />
           </label>
@@ -63,6 +64,7 @@ function CreateReservationForm() {
               type="text"
               name="last_name"
               onChange={changeHandler}
+              value={form.last_name}
               required
             />
           </label>
@@ -74,6 +76,7 @@ function CreateReservationForm() {
               type="text"
               name="mobile_number"
               onChange={changeHandler}
+              value={form.mobile_number}
               required
             />
           </label>
@@ -85,6 +88,7 @@ function CreateReservationForm() {
               type="date"
               name="reservation_date"
               onChange={changeHandler}
+              value={form.reservation_date}
               required
             />
           </label>
@@ -96,6 +100,7 @@ function CreateReservationForm() {
               type="time"
               name="reservation_time"
               onChange={changeHandler}
+              value={form.reservation_time}
               required
             />
           </label>
@@ -107,6 +112,7 @@ function CreateReservationForm() {
               type="number"
               name="people"
               onChange={changeHandler}
+              value={form.people}
               required
             />
           </label>
