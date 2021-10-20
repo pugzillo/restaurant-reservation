@@ -177,19 +177,18 @@ function reservationStatusIsUnknown(req, res, next) {
   next();
 }
 
-// /**
-//  * Checks if status is finished; cannot update the reservation
-//  */
-// function reservationStatusIsFinished(req, res, next) {
-//   console.log("finished")
-//   const status = res.locals.reservation.status;
-//   if (status === "finished") {
-//     const error = new Error("Reservation status is finished.");
-//     error.status = 400;
-//     return next(error);
-//   }
-//   next();
-// }
+/**
+ * Checks if status is finished; cannot update the reservation
+ */
+function reservationStatusIsFinished(req, res, next) {
+  const status = res.locals.reservation.status;
+  if (status === "finished") {
+    const error = new Error("Reservation status is finished.");
+    error.status = 400;
+    return next(error);
+  }
+  next();
+}
 
 /**
  * Checks if status is seated; cannot update the reservation
@@ -284,8 +283,8 @@ module.exports = {
   updateStatus: [
     asyncErrorBoundary(reservationIdExists),
     reservationStatusIsUnknown,
-    // reservationStatusIsFinished,
-    asyncErrorBoundary(update),
+    reservationStatusIsFinished,
+    asyncErrorBoundary(updateStatus),
   ],
   update: [
     asyncErrorBoundary(reservationIdExists),
