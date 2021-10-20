@@ -122,7 +122,6 @@ export async function createTable(table, signal) {
     data: {
       ...table,
       capacity: parseInt(table.capacity),
-      status: "Free",
     },
   };
 

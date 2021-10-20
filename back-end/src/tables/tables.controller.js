@@ -223,7 +223,7 @@ async function destroyReservation(req, res, next) {
     ...res.locals.reservation,
     status: "finished",
   };
-  console.log(updatedReservation);
+
   try {
     const tableData = await service.update(updatedTable);
     await reservationService.update(updatedReservation);
