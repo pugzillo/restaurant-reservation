@@ -142,14 +142,16 @@ function Dashboard({ date }) {
                       )}
                     </td>
                     <td>
-                      <Link
-                        type="button"
-                        className="btn btn-secondary"
-                        href={`/reservations/${reservation.reservation_id}/edit`}
-                        to={`/reservations/${reservation.reservation_id}/edit`}
-                      >
-                        Edit
-                      </Link>
+                      {reservation.status === "booked" && (
+                        <Link
+                          type="button"
+                          className="btn btn-secondary"
+                          href={`/reservations/${reservation.reservation_id}/edit`}
+                          to={`/reservations/${reservation.reservation_id}/edit`}
+                        >
+                          Edit
+                        </Link>
+                      )}
                     </td>
                   </tr>
                 )
