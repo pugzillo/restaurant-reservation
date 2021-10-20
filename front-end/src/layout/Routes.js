@@ -8,6 +8,7 @@ import NotFound from "./NotFound";
 import { today } from "../utils/date-time";
 import ReservationSeating from "../dashboard/ReservationSeating";
 import Search from "../search/search";
+import EditReservations from "../reservations/edit-reservations-form";
 
 /**
  * Retrieves query parameters of a URL via URLSearchParams
@@ -34,6 +35,9 @@ function Routes() {
       </Route>
       <Route path="/tables/new">
         <NewTableForm />
+      </Route>
+      <Route path="/reservations/:reservation_id/edit">
+        <EditReservations />
       </Route>
       <Route path="/reservations/:reservation_id/seat">
         <ReservationSeating />
