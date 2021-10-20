@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { createReservation } from "../utils/api";
 import { Message } from "semantic-ui-react";
 
-function CreateReservationForm() {
+function ReservationForm({ reservation }) {
   // tracks form state
   const [form, setForm] = useState({
     first_name: "",
@@ -35,9 +35,31 @@ function CreateReservationForm() {
     history.push("/dashboard"); // send user to home after canceling
   };
 
+  useEffect(preFillForm, [reservation]);
+
+  function preFillForm() {
+    if (reservation && Object.keys(reservation).length > 0) {
+      const {
+        first_name,
+        last_name,
+        mobile_number,
+        reservation_date,
+        reservation_time,
+        people,
+      } = reservation;
+      setForm({
+        first_name,
+        last_name,
+        mobile_number,
+        reservation_date,
+        reservation_time,
+        people,
+      });
+    }
+  }
+
   return (
     <div className="CreateReservationForm">
-      <h1>Create New Reservation</h1>
       {formErrors.length !== 0 && (
         <Message negative className="alert alert-danger">
           <Message.Header>Warning:</Message.Header>
@@ -51,6 +73,8 @@ function CreateReservationForm() {
             <input
               type="text"
               name="first_name"
+              id="first_name"
+              className="form-control"
               onChange={changeHandler}
               value={form.first_name}
               required
@@ -63,6 +87,8 @@ function CreateReservationForm() {
             <input
               type="text"
               name="last_name"
+              id="last_name"
+              className="form-control"
               onChange={changeHandler}
               value={form.last_name}
               required
@@ -75,6 +101,8 @@ function CreateReservationForm() {
             <input
               type="text"
               name="mobile_number"
+              id="mobile_number"
+              className="form-control"
               onChange={changeHandler}
               value={form.mobile_number}
               required
@@ -87,6 +115,8 @@ function CreateReservationForm() {
             <input
               type="date"
               name="reservation_date"
+              id="reservation_date"
+              className="form-control"
               onChange={changeHandler}
               value={form.reservation_date}
               required
@@ -99,6 +129,8 @@ function CreateReservationForm() {
             <input
               type="time"
               name="reservation_time"
+              id="reservation_time"
+              className="form-control"
               onChange={changeHandler}
               value={form.reservation_time}
               required
@@ -111,6 +143,8 @@ function CreateReservationForm() {
             <input
               type="number"
               name="people"
+              id="people"
+              className="form-control"
               onChange={changeHandler}
               value={form.people}
               required
@@ -130,4 +164,4 @@ function CreateReservationForm() {
   );
 }
 
-export default CreateReservationForm;
+export default ReservationForm;

@@ -152,7 +152,6 @@ function reservationIsDuringRestaurantHours(req, res, next) {
  * Checks if reservation_id exists
  */
 async function reservationIdExists(req, res, next) {
-  console.log("exists")
   const reservationId = req.params.reservation_id;
   const reservation = await service.read(reservationId);
 

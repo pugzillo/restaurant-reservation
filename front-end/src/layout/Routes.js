@@ -2,13 +2,13 @@ import React from "react";
 
 import { Redirect, Route, Switch, useLocation } from "react-router-dom";
 import Dashboard from "../dashboard/Dashboard";
-import CreateReservationForm from "../reservations/create-reservation-form";
+import NewReservation from "../reservations/NewReservation";
 import NewTableForm from "../tables/new-table-form";
 import NotFound from "./NotFound";
 import { today } from "../utils/date-time";
 import ReservationSeating from "../dashboard/ReservationSeating";
 import Search from "../search/search";
-import EditReservations from "../reservations/edit-reservations-form";
+import EditReservation from "../reservations/EditReservation";
 
 /**
  * Retrieves query parameters of a URL via URLSearchParams
@@ -37,13 +37,13 @@ function Routes() {
         <NewTableForm />
       </Route>
       <Route path="/reservations/:reservation_id/edit">
-        <EditReservations />
+        <EditReservation />
       </Route>
       <Route path="/reservations/:reservation_id/seat">
         <ReservationSeating />
       </Route>
       <Route path="/reservations/new">
-        <CreateReservationForm />
+        <NewReservation />
       </Route>
       <Route exact={true} path="/reservations">
         <Redirect to={"/dashboard"} />
