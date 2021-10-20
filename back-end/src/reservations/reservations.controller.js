@@ -246,14 +246,24 @@ async function read(req, res) {
 /**
  * Update handler for reservation status
  */
-async function update(req, res) {
+async function updateStatus(req, res) {
   const newStatus = req.body.data.status;
   const updatedReservation = {
     ...res.locals.reservation,
     status: newStatus,
   };
-  console.log(req.body.data);
-  console.log(updatedReservation)
+  const data = await service.update(updatedReservation);
+  res.status(200).json({ data });
+}
+
+/**
+ * Update handler for entire reservation
+ */
+ async function update(req, res) {
+  const updatedReservation = {
+    ...req.body.data,
+    reservation_id: res.locals.reservation.reservation_id,
+  };
   const data = await service.update(updatedReservation);
   res.status(200).json({ data });
 }
@@ -272,10 +282,15 @@ module.exports = {
     asyncErrorBoundary(create),
   ],
   read: [asyncErrorBoundary(reservationIdExists), asyncErrorBoundary(read)],
-  update: [
+  updateStatus: [
     asyncErrorBoundary(reservationIdExists),
     reservationStatusIsUnknown,
     // reservationStatusIsFinished,
+    asyncErrorBoundary(update),
+  ],
+  update: [
+    asyncErrorBoundary(reservationIdExists),
+    reservationStatusIsUnknown,
     asyncErrorBoundary(update),
   ],
   reservationStatusIsSeated,
