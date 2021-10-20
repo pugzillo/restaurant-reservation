@@ -170,7 +170,7 @@ async function reservationIdExists(req, res, next) {
 function reservationStatusIsUnknown(req, res, next) {
   console.log("unknown")
   const status = req.body.data.status;
-  if (!["booked", "seated", "finished"].includes(status)) {
+  if (!["booked", "seated", "finished", "cancelled"].includes(status)) {
     const error = new Error("Reservation status is unknown.");
     error.status = 400;
     return next(error);
@@ -247,12 +247,13 @@ async function read(req, res) {
  * Update handler for reservation status
  */
 async function update(req, res) {
-  console.log("update")
   const newStatus = req.body.data.status;
   const updatedReservation = {
     ...res.locals.reservation,
     status: newStatus,
   };
+  console.log(req.body.data);
+  console.log(updatedReservation)
   const data = await service.update(updatedReservation);
   res.status(200).json({ data });
 }
