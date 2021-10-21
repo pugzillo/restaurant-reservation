@@ -85,6 +85,12 @@ async function tableIdExists(req, res, next) {
  */
 async function reservationIdExists(req, res, next) {
   const reservationId = req.body.data.reservation_id;
+  if (!reservationId) {
+    return next({
+      status: 400,
+      message: "reservation_id is missing or empty",
+    });
+  }
   const reservation = await reservationService.read(reservationId);
   if (!reservation) {
     const error = new Error(`reservation_id ${reservationId} does not exist`);
@@ -219,14 +225,10 @@ async function destroyReservation(req, res, next) {
     ...res.locals.table,
     reservation_id: null,
   };
-  const updatedReservation = {
-    ...res.locals.reservation,
-    status: "finished",
-  };
 
   try {
     const tableData = await service.update(updatedTable);
-    await reservationService.update(updatedReservation);
+    await reservationService.finishReservation(updatedTable.reservation_id);
     res.status(200).json({ tableData });
   } catch (error) {
     next(error);
@@ -254,7 +256,6 @@ module.exports = {
   read: [asyncErrorBoundary(read)],
   destroyReservation: [
     asyncErrorBoundary(tableIdExists),
-    asyncErrorBoundary(reservationIdExists),
     tableIsFree,
     asyncErrorBoundary(destroyReservation),
   ],
