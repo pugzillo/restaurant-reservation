@@ -207,7 +207,7 @@ describe("US-06 - Reservation status", () => {
       tableOne = await knex("tables").orderBy("table_name").first();
     });
 
-    test("returns 200 and changes reservation status to 'finished'", async () => {
+    test.only("returns 200 and changes reservation status to 'finished'", async () => {
       expect(tableOne).not.toBeUndefined();
       expect(reservationOne).not.toBeUndefined();
 
@@ -230,6 +230,8 @@ describe("US-06 - Reservation status", () => {
       const reservationResponse = await request(app)
         .get(`/reservations/${reservationOne.reservation_id}`)
         .set("Accept", "application/json");
+
+      console.log(reservationResponse.body)
 
       expect(reservationResponse.body.error).toBeUndefined();
       expect(reservationResponse.body.data).toHaveProperty(

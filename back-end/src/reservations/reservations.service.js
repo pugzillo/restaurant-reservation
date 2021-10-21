@@ -33,7 +33,8 @@ function update(updatedReservation) {
 function finishReservation(reservation_id) {
   return knex("reservations")
     .where({ reservation_id: reservation_id })
-    .update({ status: "finished" });
+    .update({ status: "finished" })
+    .then((updatedRecords) => updatedRecords[0]);
 }
 
 function search(mobile_number) {

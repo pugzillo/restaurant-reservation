@@ -221,6 +221,7 @@ async function update(req, res, next) {
  * Destroy reservation for a table
  */
 async function destroyReservation(req, res, next) {
+  const reservation_id = res.locals.table.reservation_id;
   const updatedTable = {
     ...res.locals.table,
     reservation_id: null,
@@ -228,7 +229,7 @@ async function destroyReservation(req, res, next) {
 
   try {
     const tableData = await service.update(updatedTable);
-    await reservationService.finishReservation(updatedTable.reservation_id);
+    await reservationService.finishReservation(reservation_id);
     res.status(200).json({ tableData });
   } catch (error) {
     next(error);
