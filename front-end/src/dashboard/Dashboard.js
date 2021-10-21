@@ -45,6 +45,22 @@ function Dashboard({ date }) {
   const handlePrevious = () => {
     setdisplayedDate(previous(displayedDate));
   };
+  const handleCancel = (event, reservation_id) => {
+    if (
+      window.confirm(
+        "Do you want to cancel this reservation? This cannot be undone."
+      )
+    ) {
+      const abortController = new AbortController();
+      updateReservationStatus(
+        reservation_id,
+        "finished",
+        abortController.signal
+      )
+        .then(() => loadDashboard())
+        .catch(setTableReservationErrors);
+    }
+  };
   const finishButton = (reservationId, tableId) => {
     if (reservationId) {
       return (
@@ -64,8 +80,11 @@ function Dashboard({ date }) {
   const handleModalFinish = (event, reservationId) => {
     if (window.confirm("Is this table ready to seat new guests?")) {
       const abortController = new AbortController();
-      removeReservation(event.target.value, reservationId, abortController.signal)
-        .then(() => updateReservationStatus(reservationId, "finished"))
+      removeReservation(
+        event.target.value,
+        reservationId,
+        abortController.signal
+      )
         .then(() => loadDashboard())
         .catch(setTableReservationErrors);
     }
@@ -110,6 +129,8 @@ function Dashboard({ date }) {
               <th scope="col">Reservation Time</th>
               <th scope="col">Status</th>
               <th scope="col"></th>
+              <th scope="col"></th>
+              <th scope="col"></th>
             </tr>
           </thead>
           <tbody>
@@ -135,6 +156,32 @@ function Dashboard({ date }) {
                           Seat
                         </Link>
                       )}
+                    </td>
+                    <td>
+                      {reservation.status === "booked" && (
+                        <Link
+                          type="button"
+                          className="btn btn-secondary"
+                          href={`/reservations/${reservation.reservation_id}/edit`}
+                          to={`/reservations/${reservation.reservation_id}/edit`}
+                        >
+                          Edit
+                        </Link>
+                      )}
+                    </td>
+                    <td>
+                      {
+                        <button
+                          type="button"
+                          className="btn btn-danger"
+                          data-reservation-id-cancel={
+                            reservation.reservation_id
+                          }
+                          onClick={(event) => handleCancel(event, reservation.reservation_id)}
+                        >
+                          Cancel
+                        </button>
+                      }
                     </td>
                   </tr>
                 )

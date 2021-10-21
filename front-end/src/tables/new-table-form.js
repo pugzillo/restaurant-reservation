@@ -36,13 +36,13 @@ function NewTableForm() {
         <div className="TableName">
           <label>
             Table Name:
-            <input type="text" name="table_name" onChange={changeHandler} />
+            <input type="text" name="table_name" className="form-control"onChange={changeHandler} />
           </label>
         </div>
         <div className="Capacity">
           <label>
             Capacity:
-            <input type="number" name="capacity" onChange={changeHandler} />
+            <input type="number" name="capacity" className="form-control" onChange={changeHandler} />
           </label>
         </div>
         <div className="FormButtons">
