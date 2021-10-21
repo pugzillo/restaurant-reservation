@@ -85,7 +85,6 @@ function Dashboard({ date }) {
         reservationId,
         abortController.signal
       )
-        .then(() => updateReservationStatus(reservationId, "finished"))
         .then(() => loadDashboard())
         .catch(setTableReservationErrors);
     }

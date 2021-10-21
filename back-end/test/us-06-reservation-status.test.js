@@ -231,8 +231,6 @@ describe("US-06 - Reservation status", () => {
         .get(`/reservations/${reservationOne.reservation_id}`)
         .set("Accept", "application/json");
 
-      console.log(reservationResponse.body)
-
       expect(reservationResponse.body.error).toBeUndefined();
       expect(reservationResponse.body.data).toHaveProperty(
         "status",
